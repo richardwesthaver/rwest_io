@@ -1,0 +1,68 @@
+#+TITLE: rwest-io
+#+DATE: 2022-02-08
+#+AUTHOR: ellis
+#+EMAIL: ellis@rwest.io
+#+DESCRIPTION: My Website
+
+This project contains the source code for my personal website,
+[[https://rwest.io][rwest.io]]. It is written in Rust and compiles the frontend (=client=)
+to WebAssembly which is served by the backend server binary
+(=server=). The =common= crate provides the API and primitive types
+used to coordinate between the frontend and backend.
+
+* API
+
+* Development
+=wasm-pack= is required to build the frontend.
+#+begin_src shell
+cargo install wasm-pack
+#+end_src
+
+The =build.sh= and =serve.sh= scripts are used for compiling and
+serving the app. The port used can be changed from the default (3030)
+using an env variable:
+#+begin_src shell
+PORT=8080 ./serve.sh
+#+end_src
+
+* COMMENT notes
+** tasks
+*** RESEARCH explore sauron
+[[https://github.com/ivanceras/sauron][sauron - github]]
+- build a frontend app
+- serve it
+
+*** RESEARCH API spec
+*** TODO define types and API
+- build out =common=
+
+*** TODO implement API
+- client app.rs
+- server fn calls
+- messages and handlers
+- MVC
+
+*** TODO MVP
+** sketch
+#+begin_src artist
+                              VAL          
+               +---------+                        
+               | /post   |  /  {UUID}      
+               |         |                          
+  +---+        |         |                          
+  |API|        |         |                          
+  +---+        | /note   |  /  {UUID}               
+    \          |         |                          
+     \         |         |                          
+      \        |         |                          
+       +------ | /media  |  /  {TYPE}               
+               |         |                          
+               |         |                          
+               |         |                          
+               | /data   |  /  {TYPE} 
+               |         |            
+               |         |            
+               |         |            
+               | /status |            
+               +---------+            
+#+end_src
