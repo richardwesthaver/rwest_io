@@ -1,0 +1,45 @@
+#+TITLE: Knowledge and Information
+#+DATE: 2021-04-20 Tue
+#+FILETAGS: :philosophy:ramble:
+#+OPTIONS: ^:nil num:nil toc:nil
+#+SETUPFILE: ../clean.theme
+* [[https://en.wikipedia.org/wiki/Knowledge][Knowledge]]
+  - pursuit of knowledge ~= intrinsic good IMO
+  - knowledge systems are used to build and manage knowledge
+  - random thoughts on knowledge ::
+    First of all, what the hell is /Knowledge/? Why it is something we
+    know, of course! /But seriously/.. it depends on who you talk to.
+    - The lawyer will say it's an understanding of a thing
+    - The economist will say it's information about a thing
+    - The philosopher will say they don't know
+  
+    At least Plato had a catchy definition for us: a "justified true
+    belief". However, it is well understood nowadays that this one-liner
+    doesn't suffice. Some smug epistemologist may tell you it's a
+    "cluster concept", or that it is simply an artifact of natural
+    language, referring only to a degree of conviction. Both excellent
+    ways of dodging the question.
+  
+    In pursuit of practicality let's ignore the philosopher and focus on
+    the remaining definitions..
+    - an understanding of a thing
+    - information about a thing
+    Nice, and now - a magic trick:
+    - an understanding of a /thing/ we have information about
+    
+    Information is cultivated to develop Knowledge. This knowledge can be
+    used to develop even more Knowledge, or revise existing Knowledge.
+  
+    This is our lazy compromise between the two - composed of an output
+    (an understanding) and an input (information). We'll refer to this
+    definition when talking about /Knowledge Management/, which is simply
+    a process of turning our input into an output and looping over that
+    output.
+
+* [[https://en.wikipedia.org/wiki/Information][Information]]
+  - Information is in essence, data that enables decision making.
+  - "knowledge obtained from investigation, study, or instruction."
+  - disinformation :: false information which is intended to mislead
+  - misinformation :: false, inaccurate, or misleading information
+    that is communicated regardless of an intention to deceive.
+  - [[https://en.wikipedia.org/wiki/Uncertainty][uncertainty]]

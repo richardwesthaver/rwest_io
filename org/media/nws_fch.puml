@@ -1,0 +1,26 @@
+@startuml
+participant nws_api
+participant client
+participant file_handle
+participant db_handle
+
+client -> file_handle : read(City)
+activate file_handle
+client <-- file_handle: point
+deactivate file_handle
+client -> nws_api : get_point(point)
+activate nws_api
+client <-- nws_api: point_info
+deactivate nws_api
+client -> client : parse(point_info)
+client -> nws_api : get_forecast(data_provider)
+[-> nws_api : ret(Forecast)
+nws_api -> client : respond(Forecast)
+client -> client : parse(Forecast)
+client -> file_handle : push(Forecast)
+]-> db_handle : start(db_opts)
+db_handle -> file_handle : peek(Forecast)
+activate file_handle
+file_handle -> db_handle : write(<class 'bytes'>, Forecast)
+deactivate file_handle
+@enduml

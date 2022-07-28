@@ -1,16 +1,11 @@
 #+TITLE: rwest-io
-#+DATE: 2022-02-08
+#+DATE: 2022-07-26
 #+AUTHOR: ellis
 #+EMAIL: ellis@rwest.io
 #+DESCRIPTION: My Website
 
 This project contains the source code for my personal website,
-[[https://rwest.io][rwest.io]]. It is written in Rust and compiles the frontend (=client=)
-to WebAssembly which is served by the backend server binary
-(=server=). The =common= crate provides the API and primitive types
-used to coordinate between the frontend and backend.
-
-* API
+[[https://rwest.io][rwest.io]].
 
 * Development
 =wasm-pack= is required to build the frontend.
@@ -25,44 +20,55 @@ using an env variable:
 PORT=8080 ./serve.sh
 #+end_src
 
-* COMMENT notes
-** tasks
-*** RESEARCH explore sauron
-[[https://github.com/ivanceras/sauron][sauron - github]]
+* COMMENT tasks
+** DONE explore sauron
+- State "DONE"       from "RESEARCH"   [2022-07-25 Mon 02:48]
+[[https://github.com/ivanceras/sauron][sauron/ - github]]
 - build a frontend app
 - serve it
 
-*** RESEARCH API spec
+** RESEARCH design
+- State "TODO"       from              [2022-07-25 Mon 02:58]
+:notes:
+- bare-bones index
+:end:
+*** TODO index
+- State "TODO"       from              [2022-07-25 Mon 03:01]
 *** TODO define types and API
 - build out =common=
 
-*** TODO implement API
+** TODO implement API
 - client app.rs
 - server fn calls
 - messages and handlers
 - MVC
 
-*** TODO MVP
-** sketch
+** TODO MVP
+* sketch
 #+begin_src artist
-                              VAL          
+                   KEY          VAL              
                +---------+                        
-               | /post   |  /  {UUID}      
-               |         |                          
-  +---+        |         |                          
-  |API|        |         |                          
-  +---+        | /note   |  /  {UUID}               
-    \          |         |                          
-     \         |         |                          
-      \        |         |                          
-       +------ | /media  |  /  {TYPE}               
-               |         |                          
-               |         |                          
-               |         |                          
-               | /data   |  /  {TYPE} 
-               |         |            
-               |         |            
-               |         |            
-               | /status |            
+               | /blog   |  /  {UUID}  + 	       
+               |         |              \           
+  +--------+   |         |               \          
+  |rwest.io|   |         |                \         
+  +--------+   | /notes  |  /  {UUID} -----\      
+    \          |         |                  -       
+     \         |         |                   \      
+      \        |         |                    -  =++     +----+   
+       +------ | /media  |  /  {TYPE}  ---------+== ++ ++|HYDE| 
+               |         |                     / ==  ++  +----+  
+               |         |                    /     	     
+               |         |                   /      	     
+               | /data   |  /  {TYPE} ------+		     
+               |         |                 / 
+               |         |                /  
+               |         |               /          
+               | /status |  /  (ID) ----+
+               |         |	         / 
+               | /x      |  /  (TYPE) +
                +---------+            
 #+end_src
+
+* resources
+- [[https://gitlab.com/OlMon/org-themes/-/tree/master/][org themes]]

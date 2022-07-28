@@ -1,0 +1,16 @@
+#+TITLE: Drum Chops
+#+DATE: 2020-11-10 Tue
+#+FILETAGS: :music:drums:lang:
+#+SETUPFILE: ../clean.theme
+- a /shed/ is a drum session. usually involves a couple drum buddies
+  trading solos and cool /chops/ off a single groove. \\
+  [[yt:ct-k91feDp4][shed sessionz vol.1]]
+- a /groove/ refers to a repeated pattern with significant focus on
+  time-keeping and generally holdin' it down \\
+  [[yt:T1j1_aeK6WA][The Purdie Shuffle]]
+  [[yt:Ou70vvjE8k4][50 Ways to Leave Your Lover]]
+  [[yt:ON9vJWBtgHA][Steve Gadd Funky Groove w/Eddie Gomez]]
+- a /chop/ refers to a short phrase or pattern on the drum
+  kit, usually with variations. \\
+  [[yt:LSSIvvwCtVQ][Darion Ja'Von's flam-sweep thang]]
+

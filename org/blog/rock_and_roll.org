@@ -1,0 +1,249 @@
+#+TITLE: Rock & Roll
+#+DATE: 2021-04-28 Wed
+#+FILETAGS: :c++:rocksdb:rust:
+#+OPTIONS: ^:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
+#+SETUPFILE: ../clean.theme
+RocksDB is a /persistent/ key-value store, where Keys and Values are
+*arbitrary byte arrays*. It's maintained by the Facebook Database
+Engineering Team and built as a c++ library. [[https://raw.githubusercontent.com/facebook/rocksdb/gh-pages-old/intro.pdf][The Story of RocksDB]]
+provides some background info and a [[https://github.com/facebook/rocksdb/wiki][wiki]] is provided in the repo.
+
+Our goal right now is to make a simple ~hello world~ with RocksDB that
+will serve as the start of the info store.
+
+* Why RocksDB?
+:PROPERTIES:
+:CUSTOM_ID: why
+:END:
+  - i like it
+  - file system, storage medium, and mostly platform agnostic
+  - [[https://github.com/facebook/rocksdb/wiki/Direct-IO][Direct-IO]]
+  - caters to a variety of use cases
+    
+#+caption: the rock
+[[../media/the_rock.jpg]]
+
+moving on.
+* Exploring Rocks
+:PROPERTIES:
+:CUSTOM_ID: exploring
+:END:
+  first step is to clone the repo and take a peak at the examples.
+
+  - clone repo & compile static_lib
+
+  #+begin_src sh :exports code
+git clone https://github.com/facebook/rocksdb && cd rocksdb
+make static_lib
+cd examples/; make all
+  #+end_src
+
+  the examples don't output anything to stdout when they're run, but many of them store database files under a directory in =/tmp= which can be inspected. after compiling the library in the root you get a =make_config.mk= which is include'd in =examples/makefile=. worth checking out to get a better understanding of how examples are compiled (with g++).
+
+  let's take a look at the output of options_file_example:
+
+  #+begin_src sh :exports both :eval never-export
+cd ./media/01/rocksdb_options_file_example && ls
+  #+end_src
+
+  #+results:
+  | 000012.log               |
+  | CURRENT                  |
+  | IDENTITY                 |
+  | LOCK                     |
+  | LOG                      |
+  | LOG.old.1621383828949925 |
+  | MANIFEST-000011          |
+  | OPTIONS-000009           |
+  | OPTIONS-000014           |
+
+  The LOG file looks like this:
+  #+begin_example
+ 7f1c37455ac0 RocksDB version: 6.20.0
+ 7f1c37455ac0 Git sha a0e0feca6281e6f3c207757a15f6b99d3a67070d
+ 7f1c37455ac0 Compile date 2021-04-28 12:52:53
+ 7f1c37455ac0 DB SUMMARY
+ 7f1c37455ac0 DB Session ID:  73HSPOGLJMAK0WD2FX8D
+ 7f1c37455ac0 CURRENT file:  CURRENT
+ 7f1c37455ac0 IDENTITY file:  IDENTITY
+ 7f1c37455ac0 MANIFEST file:  MANIFEST-000004 size: 110 Bytes
+ 7f1c37455ac0 SST files in /tmp/rocksdb_options_file_example dir, Total Num: 0, files: 
+# ...
+  #+end_example
+
+  and the OPTIONS file like this:
+  #+begin_example
+[Version]
+  rocksdb_version=6.20.0
+  options_file_version=1.1
+
+[DBOptions]
+# ...
+  #+end_example
+
+  DB [[https://github.com/facebook/rocksdb/wiki/RocksDB-Options-File][Option Files]] are stored in [[https://en.wikipedia.org/wiki/INI_file][INI]] format. There are a looooot of
+  options and a lot of information shown in the LOG. Yikes!
+	
+* Some Code
+:PROPERTIES:
+:CUSTOM_ID: code
+:END:
+
+  After poking around in the wiki for a bit and learning about the
+  [[https://github.com/facebook/rocksdb/wiki/Basic-Operations][Basic Operations]], we can build a helloworld-db tool of our own for
+  testing. We'll also make a simple Makefile that compiles our code
+  with [[https://clang.llvm.org/][Clang]]. We're not going to do much with this program right now
+  since the [[https://github.com/facebook/rocksdb/tree/master/examples][examples]] and [[https://github.com/facebook/rocksdb/wiki][wiki]] provide plenty of reading material.
+  
+  - helloworld.cc
+
+    boneless =simple_example.cc= from the examples
+
+     #+begin_src c++
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include "rocksdb/db.h"
+#include "rocksdb/options.h"
+
+using namespace rocksdb;
+
+std::string db_path = "infodb";
+DB* db;
+Options options;
+	
+void run() {
+	options.IncreaseParallelism();
+	options.OptimizeLevelStyleCompaction();
+	options.create_if_missing = true;		
+	Status s = DB::Open(options, db_path, &db);
+	assert(s.ok());
+
+	std::string value;	
+  s = db->Get(ReadOptions(), "some_key", &value);
+  assert(s.IsNotFound());
+}
+
+int main() {
+	run();
+	
+	delete db;
+	return 0;
+}
+      #+end_src
+
+    - Makefile
+
+      compile =helloworld.cc= with Clang, link rocksdb dynamically
+      (for now). We can see the linked .so files with =ldd
+      ./helloworld= command after compiling.
+
+      #+begin_src makefile
+	.PHONY: clean
+	_: compile
+	compile: helloworld.cc
+		clang++ -Wall helloworld.cc -ohelloworld -lrocksdb
+
+	clean:
+		rm -rf helloworld
+      #+end_src
+
+    After compiling with ~make~ and running ~./helloworld~ we get some
+    files dumped to ~./infodb~ with the same structure as the
+    examples.
+
+* Column Families
+:PROPERTIES:
+:CUSTOM_ID: column_families
+:END:
+
+  [[https://github.com/facebook/rocksdb/wiki/Column-Families][Column Families]] are a feature of RocksDB that allows us to logically
+  partition our database. HOWEVER, these are not 'columns' as they are
+  known in relational databases. Column Families are simply a new
+  namespace for key:val pairs. If we implement our Column Families
+  correctly , we can /build/ a full database model, relational or
+  otherwise. These features are what makes embedded key:val stores
+  like RocksDB unique - they are *primitive*, and allow developers an
+  insane level of flexibility in their implementations.
+
+  Going forward, how we partition our database through Column Families
+  will play an important role in how useful it is, and how easily we
+  can build additional layers of processing and API on top of it.
+
+  For now, we'll just take a peek at [[https://github.com/indradb/indradb][IndraDB]] and how Column Families
+  are used in their implementation to store [[https://en.wikipedia.org/wiki/Graph_(abstract_data_type)][Graph]] data structures.
+
+** IndraDB Implementation
+:PROPERTIES:
+:CUSTOM_ID: indradb
+:END:
+
+   IndraDB is a Graph Database library written in Rust. It's heavily
+   inspired by [[https://www.cs.cmu.edu/~pavlo/courses/fall2013/static/papers/11730-atc13-bronson.pdf][TAO]] (an excellent read btw) and allows for arbitrary
+   /Properties/ to be stored with any Node or Edge. IndraDB supports
+   quite a few different backends, but we're only interested in the
+   RocksDB impl, more specifically, [[https://github.com/indradb/indradb/tree/master/lib/src/rdb][lib/src/rdb]]. The column family
+   names can be found in [[https://github.com/indradb/indradb/blob/master/lib/src/rdb/datastore.rs][datastore.rs]]:
+
+   #+begin_src rust
+const CF_NAMES: [&str; 6] = [
+    "vertices:v1",
+    "edges:v1",
+    "edge_ranges:v1",
+    "reversed_edge_ranges:v1",
+    "vertex_properties:v1",
+    "edge_properties:v1",
+];
+   #+end_src
+
+   =vertices=, =edges=, =edge_ranges=, and =reversed_edge_ranges= are
+   directly derived from the TAO Model. =vertex_properties= and
+   =edge_properties= represent encoded JSON objects (i.e. properties)
+   that can be attached to =vertices= and =edges=. The first four
+   Column Families are all we need to create the TAO Graph
+   implementation so we'll focus on those and set aside properties.
+
+   *Vertices* are ("vertex_id" : "vertex_type") and *Edges* are
+   ("edge_id" : "edge_type"), but what are 'edge_ranges' and
+   'reversed_edge_ranges'? The answer is evident when we consider what
+   we actually get from =vertices= and =edges=. We get a single k/v
+   pair, but no way to connect them, which makes them pretty useless
+   by themselves. *edge_ranges* can be thought of as /associations/
+   between *vertices*, /indexed by time of insertion/. It boils down to
+   a k/v pair, but the key is a struct that looks like this:
+
+   #+begin_src rust
+pub struct EdgeKey {
+    /// The id of the outbound vertex.
+    pub outbound_id: Uuid,
+
+    /// The type of the edge.
+    pub t: Type,
+
+    /// The id of the inbound vertex.
+    pub inbound_id: Uuid,
+}
+   #+end_src
+
+   and the value is a timestamp, resulting in a single Edge pair
+   being:
+
+   #+begin_src rust
+pub struct Edge {
+    /// The key to the edge.
+    pub key: EdgeKey,
+
+    /// When the edge was created.
+    pub created_datetime: DateTime<Utc>,
+}
+   #+end_src
+
+   These Edges (or /associations/) can be found in both the
+   edge_ranges and reversed_edge_ranges column families, with the
+   /reversed/ associations being derived from the same EdgeKey struct
+   but with the *outbound and inbound ids swapped*. This allows us to
+   create /bidirectional/ edges (as well as support parts of the TAO
+   model, but not worth getting into here).
+

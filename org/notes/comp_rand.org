@@ -1,0 +1,934 @@
+#+TITLE: Random Computer Rambles
+#+DATE: 2020-10-24 Sat
+#+FILETAGS: :dev:cs:sci:
+#+OPTIONS: ^:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
+#+SETUPFILE: ../clean.theme
+- Computer science is the study of algorithmic processes, computational
+  machines and computation itself.
+  - [[https://www.cs.york.ac.uk/undergraduate/what-is-cs/][What is Computer Science? - Computer Science, University of York]]
+  #+begin_quote
+  Theoretical computer science (TCS) is a subset of general computer
+  science and mathematics that focuses on mathematical aspects of
+  computer science such as the theory of computation, lambda calculus,
+  and type theory.
+  -- [[https://en.wikipedia.org/wiki/Theoretical_computer_science][Wikipedia]]
+  #+end_quote
+- [[https://plato.stanford.edu/entries/computational-linguistics/][Computational Linguistics (Stanford Encyclopedia of Philosophy)]]
+  #+begin_quote
+  Human knowledge is expressed in language. So computational linguistics is very important.
+  -- Mark Steedman, ACL Presidential Address (2007)
+  #+end_quote
+- Computer Programming
+  #+begin_quote
+  Computer programming is the process of designing and building an
+  executable computer program to accomplish a specific computing result
+  or to perform a specific task. Programming involves tasks such as:
+  analysis, generating algorithms, profiling algorithms' accuracy and
+  resource consumption, and the implementation of algorithms in a chosen
+  programming language (commonly referred to as coding).
+  #+end_quote
+  - [[https://en.wikipedia.org/wiki/Computer_programming][wiki]] <-
+- Blogging is common practice in the programming world. It's a great way
+  to learn new things and gain insight.
+  - find a few good bloggers in your field of choice, and take some time
+    to understand what they're doing and why.
+  - [[https://sts10.github.io/][Prevent Default]]
+- It is clear that the future of organized web development is
+  embedded in the Cloud. :(
+  - Github, AWS, Google Cloud, Azure.. are all excellent
+    tools.
+  - These services become a core part of your deployment pipeline,
+    many of them are quite complex. The features you use are likely
+    to be based on a subscription (monthly/yearly fee),
+    pay-as-you-go model (/Gb, /Hr), or even through a third-party
+    extension (/gasp/).
+  - These factors lead to a new level of meta-programming in which
+    you create hacks to support your workflow, reduce costs, and
+    integrate with your internal infrastructure. This is the 10th
+    circle of Hell in which engineers and network specialists need
+    to Read The Docs and become subject matter experts themselves.
+  - Is there a better way?
+    - For conventional orgs, probably not.
+    - For the one-man army or isolated tribe of hackers.. perhaps.
+      - Build it yourself!
+      - Own your data.
+      - Develop in distributed silos or 'labs'.
+      - Self-host services.
+- [[https://www.csee.umbc.edu/courses/pub/WWW/courses/undergraduate/CMSC331/fall08/0101/notes/02/02history.pdf][The History of Programming Languages]]
+  - A wonderful visual history reference
+- [[https://tools.ietf.org/html/rfc8439][RFC 8439 - ChaCha20 and Poly1305 for IETF Protocols]]
+- [[https://en.wikipedia.org/wiki/Salsa20#ChaCha_variant][Salsa20 - Wikipedia]]
+  - ChaCha variant - most common stream cipher nowadays.
+- [[https://en.wikipedia.org/wiki/Stream_cipher][Stream cipher - Wikipedia]]
+- [[https://dalek.rs/][dalek cryptography]]
+  love this site design
+- [[https://en.wikipedia.org/wiki/Public_key_infrastructure][Public Key Infrastructure - Wikipedia]]
+  #+CAPTION: PKI
+  #+ATTR_HTML: :alt PKI image
+  [[https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Public-Key-Infrastructure.svg/450px-Public-Key-Infrastructure.svg.png]]
+- [[https://developer.okta.com/blog/2019/10/23/dangers-of-self-signed-certs][The Dangers of Self-Signed Certificates | Okta Developer]]
+- [[https://tools.ietf.org/html/rfc7748][RFC 7748 - Elliptic Curves for Security]]
+  - defines some familiar elliptical curves for practical security,
+    including in TLS. They work at ~128-bit and ~224-bit security
+    levels.
+- [[https://tools.ietf.org/html/rfc5116][RFC 5116 - An Interface and Algorithms for Authenticated Encryption]]
+  - AEAD descriptions - we're usually going for a form of this
+    approach with MAC+Encrypt
+- [[https://tools.ietf.org/html/rfc2104][RFC 2104 - HMAC: Keyed-Hashing for Message Authentication]]
+  - HMAC - often used with MD5, SHA-1, etc, plus a secret shared key.
+    Key Hashing
+- [[https://letsencrypt.org/2018/04/04/sct-encoding.html][Engineering deep dive: Encoding of SCTs in certificates - Let's Encrypt - Free SSL/TLS Certificates]]
+- https://www.educative.io/edpresso/what-is-hashing
+- [[https://www.ibm.com/docs/en/SSB23S_1.1.0.14/gtps7/ssldig18.gif][https://www.ibm.com/docs/en/SSB23S_1.1.0.14/gtps7/ssldig18.gif]]
+  - [[https://www.ibm.com/docs/en/ztpf/1.1.0.14?topic=concepts-digital-signatures][Digital Signatures - IBM]]
+- code signing :: the process of digitally signing executable data as
+  a means of validating authenticity and integrity.
+  - [[https://en.wikipedia.org/wiki/Code_signing][Wikipedia]]
+- [[cdn:doc/ugh.pdf][The UNIX-HATERS Handbook]]
+  “Two of the most famous products of Berkeley are LSD and Unix.  I
+  don’t think that is a coincidence.”
+- [[https://www.boost.org/doc/libs/1_39_0/libs/mpl/doc/tutorial/tutorial-metafunctions.html][Metafunctions and Higher-Order Metaprogramming - boost C++]]
+- I personally prefer 2-space indent just about everywhere. spaces >
+  tabs, but 4 spaces is too much.
+  - There are exceptions to this of course - Emacs-lisp is a big one
+    considering that best-practice is often to vertically align
+    elements.
+
+    For example, this is considered good formatting:
+    #+begin_src emacs-lisp
+(format "%a %b"
+	thing1
+	thing2)
+    #+end_src
+    And this is bad formatting:
+    #+begin_src emacs-lisp
+(format "%a %b"
+ thing1
+ thing2)
+    #+end_src
+    
+    In fact, adding my strict 2-space preference would be even /worse/
+    formatting.
+
+  - Makefiles are another good example. the =TAB= character is the
+    default indent, so you can either accept it or add an assignment
+    for the [[https://www.gnu.org/software/make/manual/make.html#Special-Variables][special variable]] =.RECIPEPREFIX= that gets added to all of
+    your Makefiles. I go for the former since it has better
+    integration with IDEs (which often expect TABs and may warn you
+    about invalid syntax, despite the =.RECIPEPREFIX= assignment)
+- Declarative
+  https://en.wikipedia.org/wiki/Declarative_programming
+  - Functional
+    https://en.wikipedia.org/wiki/Functional_programming
+- Imperative
+  https://en.wikipedia.org/wiki/Imperative_programming
+  - FORTRAN
+  - OOP
+    https://en.wikipedia.org/wiki/Object-oriented_programming
+    Object-oriented Programming (OOP for short) is a programming model
+    that organizes code around /objects/, and emphasizes the focus on
+    objects that we want to manipulate, rather than the functions and
+    logic necessary to manipulate them.
+
+    - Objects
+      Objects can be definied as data fields that have /unique attributes
+      and behavior/. They are most often identified through [[https://en.wikipedia.org/wiki/Data_modeling][data modeling]],
+      which is the practice of organizing an Information system by applying
+      a variety of formal techniques.
+
+    - Principles of OOP
+      - Encapsulation
+      - Abstraction
+      - Inheritance
+      - Polymorphism
+- Array-based
+  #+begin_quote
+  In computer science, array programming refers to solutions which allow
+  the application of operations to an entire set of values at once. Such
+  solutions are commonly used in scientific and engineering settings.
+  -- [[https://en.wikipedia.org/wiki/Array_programming][Wikipedia]]
+  #+end_quote
+  - languages include Fortran, APL, J, K, Octave, BQN
+  - opposed to scalar languages like C and Pascal with can apply
+    operations only to single values, so need to make use of control
+    structures such as indexing and looping.
+- Literate
+  - what -- The prose programming paradigm
+  - [[http://www.literateprogramming.com/][~]]
+  - [[https://en.wikipedia.org/wiki/Literate_programming][wiki]]
+  - literate programming flow \\
+    [[cdn:img/literate_c.jpg]]
+- [[https://html.spec.whatwg.org/][HTML Standard]]
+- [[https://en.wikipedia.org/wiki/HTML][HTML - Wikipedia]]
+- [[https://datatracker.ietf.org/doc/html/draft-ietf-html-spec-00][draft-ietf-html-spec-00]]
+- <> = tag, encapsulates 'elements'
+- Everything you need to learn the basic HTML spec is included in
+  modern web browsers. To get started, right click anywhere on a
+  webpage and 'Inspect Element'.
+- The Living Spec is [[https://en.wikipedia.org/wiki/HTML5][HTML5]]. It includes a bunch of modern-era elements
+  like =<canvas>= =<video>= =<audio>= =<main>=.
+- The term =HTML= is somewhat of a cluster nowadays - it can refer to
+  anything X/HTML/5 or /HTML-like/. When building systems that
+  leverage =HTML=, it is important to understand to the differences
+  between implementations of HTML parsers across different programs
+  and libraries. Read the docs.
+- [[https://en.wikipedia.org/wiki/Extract,_transform,_load][ETL]]
+- [[https://en.wikipedia.org/wiki/Extract,_load,_transform][ELT]]
+- [[https://en.wikipedia.org/wiki/Data_warehouse][Data Warehouse]]
+- [[https://en.wikipedia.org/wiki/Data_mart][Data Mart]]
+- [[https://en.wikipedia.org/wiki/Data_lake][Data Lake]]
+- [[https://en.wikipedia.org/wiki/Executable_and_Linkable_Format][ELF]]
+  - linker sections:
+    - text contains the program instructions
+    - rodata contains constant values like strings
+    - data contains statically allocated variables whose initial values are not zero
+    - bss also contains statically allocated variables whose initial values are zero
+    - vector_table is a non-standard section that we use to store the vector (interrupt) table
+    - ARM.attributes and the .debug_* sections contain metadata and will not be loaded onto the target when flashing the binary.
+- Growing a Language - Guy Steele [1998] \\
+  [[yt:_ahvzDzKdB0][_ahvzDzKdB0]]
+- https://en.wikipedia.org/wiki/C_(programming_language)
+- [[https://docs.microsoft.com/en-us/cpp/c-language/c-language-reference?view=msvc-160][C Language Reference | Microsoft Docs]]
+- [[https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html][The GNU C Reference Manual]]
+- [[https://en.cppreference.com/w/c/language][C language - cppreference.com]]
+- [[https://en.cppreference.com/w/][cppreference.com]]
+- [[https://www.reddit.com/r/rust/comments/bya8k6/programming_with_rust_vs_c_c/eqfcu0s?utm_source=share&utm_medium=web2x][Redditor comment regarding the C++ ecosystem]]
+  - This Redditor with 12y of XP writing C++ talks about all the
+  complexities involved with coding in C++. OP is asking about some of
+  the nuances of [[file:rust.org][Rust]] vs. C++, and our Redditor avoids regurgitating
+  the common arguments that are given for Rust in favor of C++ -
+  namely Memory Safety and Data Races. A fitting quote from Nietszche
+  is given as explanation for not addressing those issues:
+
+  #+begin_quote
+  Whoever fights with monsters should see to it that he does not become
+  a monster in the process. And when you gaze long into an abyss the
+  abyss also gazes into you
+  
+  -- Friedrich Nietzsche
+  #+end_quote
+- [[https://doc.rust-lang.org/book/][The Rust Book]]
+- [[https://doc.rust-lang.org/rust-by-example/][Rust By Example]]
+- [[https://doc.rust-lang.org/rustc][the rustc book]]
+  :notes:
+  - rustc is the Rust compiler. It is rarely invoked directly by the
+    programmer, but rather indirectly through Cargo. Use the
+    =--verbose= flag to see how =rustc= is called, for example in:
+    #+begin_src shell
+    cargo build --verbose
+    #+end_src
+    
+  - The compiler has many options.
+    #+begin_src shell :exports both :results output replace
+rustc --help    
+    #+end_src
+    #+RESULTS:
+    #+begin_example
+    Usage: rustc [OPTIONS] INPUT
+
+    Options:
+        -h, --help          Display this message
+            --cfg SPEC      Configure the compilation environment
+        -L [KIND=]PATH      Add a directory to the library search path. The
+                            optional KIND can be one of dependency, crate, native,
+                            framework, or all (the default).
+        -l [KIND[:MODIFIERS]=]NAME[:RENAME]
+                            Link the generated crate(s) to the specified native
+                            library NAME. The optional KIND can be one of
+                            static, framework, or dylib (the default).
+                            Optional comma separated MODIFIERS
+                            (bundle|verbatim|whole-archive|as-needed)
+                            may be specified each with a prefix of either '+' to
+                            enable or '-' to disable.
+            --crate-type [bin|lib|rlib|dylib|cdylib|staticlib|proc-macro]
+                            Comma separated list of types of crates
+                            for the compiler to emit
+            --crate-name NAME
+                            Specify the name of the crate being built
+            --edition 2015|2018|2021
+                            Specify which edition of the compiler to use when
+                            compiling code.
+            --emit [asm|llvm-bc|llvm-ir|obj|metadata|link|dep-info|mir]
+                            Comma separated list of types of output for the
+                            compiler to emit
+            --print [crate-name|file-names|sysroot|target-libdir|cfg|target-list|target-cpus|target-features|relocation-models|code-models|tls-models|target-spec-json|native-static-libs]
+                            Compiler information to print on stdout
+        -g                  Equivalent to -C debuginfo=2
+        -O                  Equivalent to -C opt-level=2
+        -o FILENAME         Write output to <filename>
+            --out-dir DIR   Write output to compiler-chosen filename in <dir>
+            --explain OPT   Provide a detailed explanation of an error message
+            --test          Build a test harness
+            --target TARGET Target triple for which the code is compiled
+        -A, --allow LINT    Set lint allowed
+        -W, --warn LINT     Set lint warnings
+            --force-warn LINT
+                            Set lint force-warn
+        -D, --deny LINT     Set lint denied
+        -F, --forbid LINT   Set lint forbidden
+            --cap-lints LEVEL
+                            Set the most restrictive lint level. More restrictive
+                            lints are capped at this level
+        -C, --codegen OPT[=VALUE]
+                            Set a codegen option
+        -V, --version       Print version info and exit
+        -v, --verbose       Use verbose output
+
+    Additional help:
+        -C help             Print codegen options
+        -W help             Print 'lint' options and default settings
+        -Z help             Print unstable compiler options
+        --help -v           Print the full set of options rustc accepts
+
+    #+end_example
+  :end:
+- [[https://doc.rust-lang.org/cargo][The Cargo Book]]
+
+- [[https://www.fpcomplete.com/blog/philosophies-rust-haskell/][Philosophies of Rust and Haskell]]                                       :hs:
+- [[https://blog.logrocket.com/rust-cryptography-libraries-a-comprehensive-list/][Rust cryptography libraries: A comprehensive list - LogRocket Blog]]
+- [[https://github.com/dalek-cryptography/bulletproofs][GitHub - dalek-cryptography/bulletproofs: A pure-Rust implementation of Bulle...]]
+- [[https://github.com/dtolnay/syn/tree/master/examples/heapsize][heapsize - syn proc_macro example]] 
+- [[https://gitlab.redox-os.org/redox-os][redox-os · GitLab]]
+- [[https://docs.rust-embedded.org/][Embedded Rust documentation]]
+- [[https://github.com/rust-embedded/wg][GitHub - rust-embedded/wg: Coordination repository of the embedded devices Working Group]]
+- [[https://github.com/MabezDev/xtensa-rust-quickstart/blob/master/src/main.rs][xtensa-rust-quickstart/main.rs at master · MabezDev/xtensa-rust-quickstart · GitHub]]
+- [[https://github.com/rust-lang/rust/blob/master/src/bootstrap/config.rs][rust/config.rs . github]]
+- [[https://jakearchibald.com/2017/async-iterators-and-generators/][Async iterators and generators - JakeArchibald.com]]
+- [[https://rustwasm.github.io/book/introduction.html][Introduction - Rust and WebAssembly]]
+- [[https://gitlab.freedesktop.org/gstreamer/gstreamer-rs][GStreamer / gstreamer-rs · GitLab]]
+- [[https://smallcultfollowing.com/babysteps/blog/2019/10/26/async-fn-in-traits-are-hard/][why async fn in traits are hard]]                                     :async:
+- [[https://github.com/mersinvald/aquamarine][aquamarine]]                                                :docs:ui:drawing:
+  - mermaid.js-powered inline dot
+- [[https://doc.rust-lang.org/nightly/std/pin/index.html][std::pin - Rust]]
+- https://crates.io/crates/pin-project
+- [[https://doc.rust-lang.org/std/macro.todo.html][std::todo - Rust]]
+  - todo macros for code that is /not yet written/ - =unimplemented!=
+  makes no such claims.
+- [[https://internals.rust-lang.org/t/traits-that-should-be-in-std-but-arent/3002][Traits that should be in std, but aren't - libs - Rust Internals]]
+- [[https://blog.logrocket.com/macros-in-rust-a-tutorial-with-examples][Macros in Rust]]                                                     :macros:
+- [[https://danielkeep.github.io/tlborm/book/README.html][The Little Book of Rust Macros]]                                     :macros:
+- [[https://docs.rust-embedded.org/book/design-patterns/hal/checklist.html][HAL design pattern checklist]]
+- [[https://www.haskell.org/][Haskell Language]]
+- [[https://blog.akquinet.de/2021/01/03/haskell-is-faster-than-rust-wait-a-sec/][Haskell is Faster than Rust! … Wait a Sec! – akquinet AG – Blog]]
+- [[https://hledger.org/index.html][hledger]]
+- [[https://www.erlang.org/][Erlang Programming Language]]
+- [[cdn:media/doc/getting_started_with_erlang-5.4.pdf][Getting Started with Erlang (PDF)]]
+- [[https://learnyousomeerlang.com/introduction][Introduction | Learn You Some Erlang for Great Good!]]
+- [[https://github.com/erlang/otp][GitHub - erlang/otp: Erlang/OTP]]
+- [[https://matthil.de/b/web_protocol.html][matt's web protocol experiments in erlang]]
+- [[https://www.pbm.com/~lindahl/real.programmers.html][Real Programmers Don't Use Pascal]]
+- APL is the OG array PL
+  - inspired many other modern languages and concept models from
+    spreadsheets to functional to DSLs.
+  - A Programming Language, 1962 \\
+  #+begin_quote
+  Applied mathematics is largely concerned with the design and
+  analysis of explicit procedures for calculating the exact or
+  approximate values of various functions. Such explicit procedures
+  are called algorithms or programs. Because an effective notation for
+  the description of programs exhibits considerable syntactic
+  structure, it is called a programming language.
+  #+end_quote
+  - [[https://aplcart.info/][APLcart - Find your way in APL]]
+  - [[https://wiki.haskell.org/Talk:APL][Talk:APL - HaskellWiki]]
+  - APL and Haskell quick comparison \\
+    [[yt:QtvvQ7MdwKY]]
+  - APL keyboard layout \\
+    [[cdn:img/APL-keybd2.svg][https://cdn.rwest.io/img/APL-keybd2.svg]]
+  - [[https://tryapl.org/][TryAPL]]
+  - some great youtube tutorials and problem walkthroughs available from [[https://www.youtube.com/channel/UC1kBxkk2bcG78YBX7LMl9pQ][code_report]]
+  - [[https://code.jsoftware.com/wiki/Essays/Incunabulum][Essays/Incunabulum - J Wiki]]
+- [[https://mlochbaum.github.io/BQN/][BQN: finally, an APL for your flying saucer]]
+- [[https://mlochbaum.github.io/BQN/commentary/why.html][Why use BQN?]]
+- [[https://mlochbaum.github.io/BQN/tutorial/index.html][BQN tutorials]]
+  ligatures everywhere 8)
+   - expressions :: +-×÷⋆√˜⁼˙∘
+      - literals = char, num
+      - primitives = functions, modifiers
+      - 1-modifiers = superscript
+      - 2-modifiers = unbroken circlers
+      - other primitives are /always functions/
+      - to try out BQN, use the [[https://mlochbaum.github.io/BQN/try.html][BQN online REPL]]
+        it's helpful with debugging since it shows the interpreted structure via evaluation diagram
+      - BQN's grammar is governed by syntactic roles. 
+        |------------+----------+-------------------+-------------+---------------|
+        | Precedence | Role     | Input roles       | Output role | Associativity |
+        |------------+----------+-------------------+-------------+---------------|
+        |          0 | ()       | Whatever          | Same thing  | (none)        |
+        |          1 | Modifier | Function, subject | Function    | left-to-right |
+        |          2 | Function | Subject           | subject     | Right-to-left |
+        |------------+----------+-------------------+-------------+---------------|
+   - lists :: ∾≍⌽↕¨´
+      - companies made with 1d (K) by Arthur Whitney : [[https://en.wikipedia.org/wiki/Kx_Systems][Kx Systems]] , [[https://shakti.com/][shakti]]
+      - a /string/ is a list of characters
+        #+begin_src text
+ "Text!" 
+        #+end_src
+      - list notation uses angle brackets, ',', newline, and '⋄' are interchangeable separators
+        #+begin_src text
+ ⟨ π, ∘, "element" ⋄ ⟨'l',1,5,'t'⟩ ⟩
+        #+end_src
+      - strands are an alternative notation for lists: '‿'
+        #+begin_src text
+ >> 2 × ⟨0‿2 ⋄ 1‿3‿5⟩
+ ⟨ ⟨ 0 4 ⟩ ⟨ 2 6 10 ⟩ ⟩
+
+ >> ⟨ 10, 20‿30 ⟩ + ⟨ 1‿2, 3 ⟩
+ ⟨ ⟨ 11 12 ⟩ ⟨ 23 33 ⟩ ⟩
+        #+end_src
+      - '≍' is the function for making one or two atom arguments into a
+        list. Solo in the one-arg case, couple in the two.
+      - '∾' is Join To (inverted lazy S), which concatenates lists
+        #+begin_src text
+>> ⟨1,2,3⟩ ∾ "abc"
+⟨ 1 2 3 'a' 'b' 'c' ⟩
+
+>> 0 ∾ ⟨1,2,3⟩
+⟨ 0 1 2 3 ⟩
+
+>> "plural" ∾ 's'
+"plurals"
+        #+end_src
+      - '⌽' is Reverse - puts a list back to front
+        #+begin_src text
+>> ⌽ "drawer"
+"reward"
+        #+end_src
+        with a left argument, means Rotate which shifts values over by
+        a specified amount. positive rotates left, negative roates
+        right.
+      - '¨' is the 1-modifier Each which applies the operand to every
+        element of a list argument - it's the same as map in a
+        functional programming language. with two list arguments (with
+        the same length), the elements of each list are paired - like
+        a zip function.
+      - '´' is Fold - reduce or accumulate functions such as `+´`
+        which sums a list
+      - '↕' Range - returns all natural numbers less than subject
+         - natural numbers start at 0 (naturally)
+      - 
+   - combinators :: <>≠=≤≥≡≢○⊸⟜
+     #+begin_quote
+     Tacit programming does not use variables during the execution of
+     a function (but you might use them for convenience in order to
+     construct a tacit program). Variables allow you to use any
+     accessible value in the program with the same level of
+     ease. Tacit code doesn't. In fact it becomes pretty unusable when
+     more than about three values are active at once. One consequence
+     is that tacit code won't cause confusion by modifying far-away
+     variables. But something unique to the tacit paradigm is that
+     when only a small number of values are active—which is always
+     true in a small enough portion of a program!—it has more powerful
+     ways to describe the way these values flow through the
+     program. The main way it achieves this is with combinators.
+     #+end_quote
+      - booleans are represented by the natural numbers 0 and 1, no
+        built-in primitives for this.  the concept and power behind
+        this is seen in how counts and occurences work -
+        #+begin_src text
+ >> 'e' = "George Boole"
+ ⟨ 0 1 0 0 0 1 0 0 0 0 0 1 ⟩
+
+ >> +´ 'e' = "George Boole"
+ 3
+
+ >> 'e' +´∘= "George Boole"  # With a combinator
+ 3
+
+        #+end_src
+      - '⋆⟜-' is "Power After Negation"
+      - '⋆⊸-' is "Exponent Before Subtracting"
+      - of course have one-arg or two arg-case of Before and After,
+        structure of application is the same.
+      - introduced the Not function - holy crap!
+        ¬x == 1-x
+        gives us multiple ways to write some interesting things
+        #+begin_src text
+>> ¬⊸× 0.5
+0.25
+        #+end_src
+      - reintroducing fact that modifiers can be assigned to data
+        values, also, data values can be applied as functions.
+        specifically /constant/ functions that just return themselves
+      - consider the following improvement to a previous example for
+        use of number as const function using Range
+        #+begin_src text
+>> ↕⊸÷⟜(-⟜1) 8
+⟨ 0 0.14285714285714285 0.2857142857142857 0.42857142857142855 0.5714285714285714 0.7142857142857143 0.8571428571428571 1 ⟩
+        #+end_src
+        or with a train, simply
+        #+begin_src text
+(↕÷-⟜1) 8
+        #+end_src
+        our new base-decode function:
+        #+begin_src text
+(@+ ·+⟜(2⊸×)´∘⌽¨ -⟜'0') "01000010"‿"01010001"‿"01001110"
+        #+end_src
+      - using a data value as the left operand of Before or the right
+        operand of After is called Bind because it attaches that data
+        value as an argument to the other operand
+   - variables :: ∧∨¬⊣⊢↑↓«»⌾
+     #+begin_quote
+     To take a proud denizen of the eternal cosmos of values, held for
+     a fleeting instant by the course of code, and bind it. Tie it
+     down with a name, failing always to alter its inner nature but
+     allowing context to reform its outer appearance. So labelled,
+     perhaps through the progress of time it will know escape, or else
+     find itself passed through one bond to another, ever
+     tethered. It's a task to be approached only with respect.
+     #+end_quote
+     #+begin_src text
+>> hey ← "Hi there"
+
+>> hey ∾ ", World!"
+"Hi there, World!"
+     #+end_src
+     > lol
+      - ← is used for declare and assign
+      - ↩ is just assign (after already declared)
+      - oh my variables have roles too
+         - lowercase = subject
+         - Uppercase = function
+         - _leftUnderscore = 1-modifier
+         - \_twoUnderscores\_ = 2-modifier
++ [[https://mlochbaum.github.io/BQN/doc/index.html][docs]] ::
+- [[https://github.com/mlochbaum/BQN/blob/master/running.md][how to run BQN]] \\
+  CBQN is the primary offline implementation - there is
+  also a mostly usable javascript implementation.
+- [[https://github.com/mlochbaum/BQN/blob/master/doc/embed.md][Using embedded BQN]]
+  #+begin_quote
+  Probably you can figure out the easy things like calling
+  bqn("×´1+↕6") to compute six factorial. But how do you get JS and
+  BQN to talk to each other, for example to compute the factorial of a
+  number n? Constructing a source string with bqn("×´1+↕"+n) isn't the
+  best way—in fact I would recommend you never use this strategy.
+
+  Instead, return a function from BQN and call it:
+  bqn("{×´1+↕𝕩}")(n). This strategy also has the advantage that you
+  can store the function, so that it will only be compiled
+  once. Define let fact = bqn("{×´1+↕𝕩}"); at the top of your program
+  and use it as a function elsewhere.
+  #+end_quote
+- [[https://github.com/cannadayr/ebqn][github/cannadayr/ebqn: A BQN virtual machine in Erlang]]
+- example of BQN characters  
+  #+begin_example
+  +-×÷⋆√⌊⌈∧∨¬|=≠≤<>≥≡≢⊣⊢⥊∾≍↑↓↕⌽⍉/⍋⍒⊏⊑⊐⊒∊⍷⊔
+  `˜˘¨⁼⌜´˝˙  ∘⊸⟜○⌾⎉⚇⍟⊘◶⎊
+  π‿∞‿@↩←⇐→,⋄  𝕨𝕩𝔽𝔾𝕎𝕏𝕗𝕘𝕊𝕤ℝ𝕣⦃⦄⟨⟩
+  #+end_example
+  See [[https://github.com/mlochbaum/BQN/blob/master/src/glyphs.bqn][glyphs.bqn]]
+- [[https://github.com/JohnEarnest/ok/blob/gh-pages/docs/Programming.md][Programming in K]]
+- [[https://ngn.bitbucket.io/k.html][k impls]]
+- http://nsl.com/k/training/idioms_K3.pdf - k2/k3 version
+- Arthur Whitney's array programming language
+- many dialects, the OG ones are proprietary, there are OSS
+  alternatives.
+- wiki :: [[https://en.wikipedia.org/wiki/K_(programming_language)][K (programming language)]]
+- ngn/k is the dialect I'm using to learn
+- see [[https://github.com/tavmem/buddy][this repo]] for examples of Arthur Whitney's programming
+  style. the side-by-side buddy allocator implementations are quite
+  thought provoking. Arthur's version is 11 lines, the idiomatic
+  documented C version is almost 750. [[https://github.com/tavmem/buddy/blob/master/a/b.c][b.c]]
+- The Origins of K ::
+  #+begin_quote
+  In computerized society where individuality is diminished, there are
+  those who find little or no satisfaction in strict conformity to
+  stereotyped thinking and are searching for their own answers to
+  life's questions and how best to live, work and find inspiration.
+
+  Although little is known about what transpired during his brief
+  visit to the Northern Venice, the idea Arthur conceived during that
+  trip is much better known — he had a clear and uncompromising vision
+  of a new system.
+
+  In 1992, Whitney departed from Morgan Stanley to fully concentrate
+  on the design of a new computer language.
+  #+end_quote
+- [[https://kparc.github.io/ref/][+/kei | K reference card]]
+- https://kparc.com/
+- [[https://github.com/kevinlawler/kona/wiki/Coding-Guidelines#this-is-a-very-unusual-style-of-c][Coding Guidelines · kevinlawler/kona]]
+- [[https://mlochbaum.github.io/BQN/implementation/kclaims.html][BQN: Wild claims about K performance]]
+- [[https://hackmd.io/@kelas/By2QFCkH_][k crash course - HackMD]]
+  latest update of kcc from [[https://github.com/kparc/kcc][github]]
+- [[https://shakti.com/][shakti homepage]]
+   - you can download the evaluation version of shakti for 30-days
+     without charge. The enterprise version is where some of the
+     premium features are though.
+- [[https://estradajke.github.io/k9-simples/kbu.pdf][Shakti k9 tutorials]] \\
+  compared to the other dialects, this is a huge amount of docs.
+   - [[https://estradajke.github.io/k9-simples/k9/index.html][Shakti (k9) tutorial]]
+- there is also kdb/kdb+ with the Q programming language. Also proprietary.
+  - As far as I know, Arthur is working more heavily on the DB side -
+    kdb+ has web APIs, FFI (for Rust too!), IPC, ML, you name
+    it. shakti plays well with these.
+- Freeware is software that is /free to use/, NOT to be confused with *Free Software*
+- It is important to distinguish Freeware from truly Free Software, as
+  the terms carry very different connotations. All Free Software is
+  also Freeware, but not all Freeware is Free Software.
+- https://www.gnu.org/software/make/manual/make.html
+  - [[info:make#Loading Objects][Loading Objects]] : You can load dynamic objects into Makefiles with
+    the =load= keyword.
+    - Such an object might include new =make= functions and a 'setup'
+      function for registering them with GNU =make='s function handling
+      system.
+
+* Algorithms                                                           :algo:
+:PROPERTIES:
+:ID: 74f3683c-e4e8-4d8c-8eea-7b3bb52b41ff
+:CUSTOM_ID: algorithms
+:END:
+#+begin_quote
+a process or set of rules to be followed in calculations or other
+problem-solving operations, especially by a computer.
+#+end_quote
+*** RNGs                                                             :rand:
+:PROPERTIES:
+:AKA: Random Number Generator
+:CUSTOM_ID: rngs
+:END:
+**** Permuted Congruential Generator
+:PROPERTIES:
+:ID:       1b56e9c3-d63c-4c87-be67-b8a35dd66729
+:AKA: PCG
+:CUSTOM_ID: permuted-congruential-generator
+:END:
+- [[https://en.wikipedia.org/wiki/Permuted_congruential_generator][wikipedia]]
+*** [[https://en.wikipedia.org/wiki/Binary_search_algorithm][Binary Search]] :search:
+:PROPERTIES:
+:ID:       c963428d-b5b5-4a9b-9912-ab8b17e3cf46
+:END:
+- A very common algorithm used to find the index of a specific item in a
+/sorted/ array.
+- Array must be sorted
+- Executes in logarithmic time
+- Faster than linear search (except for very small arrays)
+- Can be applied easily in many situations
+- There are many variations of binary search such as fractional
+  cascading and exponential search
+- Many data structures provide a better overall design for fast
+  optimal searches, such as Hash Tables
+- [[https://www.hackerearth.com/practice/algorithms/searching/binary-search/tutorial/][Binary Search Tutorials & Notes | Algorithms | HackerEarth]]
+
+*** [[https://en.wikipedia.org/wiki/Merge_sort][Merge sort]]         :sort:
+:PROPERTIES:
+:ID:       9319d0fc-ace5-401c-97b2-a3aea287421a
+:END:
+A divide and conquer algorithm for sorting an array. The array is
+split into immutable chunks and then all chunks are merged in sorted
+order.
+- Invented by John von Neumann in 1945
+*** [[https://en.wikipedia.org/wiki/Lubachevsky%E2%80%93Stillinger_algorithm][Lubachevsky–Stillinger algorithm]] :granular_flow:
+  :PROPERTIES:
+  :ID:       7e986f85-e6ca-4f76-b667-bea7fe128b8b
+  :END:
+#+begin_quote
+Lubachevsky-Stillinger (compression) algorithm (LS algorithm, LSA, or
+LS protocol) is a numerical procedure suggested by F. H. Stillinger
+and B.D. Lubachevsky that simulates or imitates a physical process of
+compressing an assembly of hard particles. As the LSA may need
+thousands of arithmetic operations even for a few particles, it is
+usually carried out on a computer.
+#+end_quote
+
+An acoustic phenomena of interest: [[https://en.wikipedia.org/wiki/Singing_sand][Singing sand]]
+
+*** [[https://github.com/apple/swift/pull/39143][An optimal algorithm for bounded random integers]] :rng:
+:PROPERTIES:
+:ID:       e87c8899-f70f-46f5-ab3c-ace0eabe9ff7
+:END:
+*** [[https://en.wikipedia.org/wiki/ROT13][ROT13]]                 :cipher:
+:PROPERTIES:
+:ID:       f45bc97b-fe13-44db-95ba-f3c9f877e568
+:END:
+A very simple, symmetrical substition cipher that shifts a character
+by 13 positions. Since the standard alphabet has 26 characters, this
+operation is its own inverse.
+- The canonical example of weak encryption.
+
+*** [[https://en.wikipedia.org/wiki/Selection_algorithm][Selection algorithm - Wikipedia]]
+:PROPERTIES:
+:ID:       4193b561-27c7-4fe4-a3e4-7a61b8c659ce
+:END:
+**** [[https://en.wikipedia.org/wiki/Quickselect][Quickselect - Wikipedia]]
+:PROPERTIES:
+:ID:       2761e5d3-df1d-43ff-91b2-a8e60ff0469c
+:END:
+*** [[https://en.wikipedia.org/wiki/Sorting_algorithm][Sorting algorithm - Wikipedia]]
+:PROPERTIES:
+:ID:       a4805e40-ccdc-4f64-9581-6c80561b0dfc
+:END:
+**** [[https://en.wikipedia.org/wiki/Quicksort][Quicksort - Wikipedia]]
+:PROPERTIES:
+:ID:       5a7a0e4b-2444-4010-861f-35c7711d7a14
+:END:
+*** [[https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm][Divide-and-conquer algorithm - Wikipedia]]
+:PROPERTIES:
+:ID:       17baa61c-0dfa-41d4-be69-1541929fcccc
+:END:
+
+* Networks                                                              :net:
+:PROPERTIES:
+:CUSTOM_ID: computer-networks
+:END:
+** Models
+:PROPERTIES:
+:ID:       eac5946e-aa20-4152-92a8-61ff49194b5b
+:END:
+*** Client-Server Model
+:PROPERTIES:
+:ID: 5dd75b6f-6245-465e-87f5-e944c4b836f6
+:CUSTOM_ID: client-server-model
+:END:
+- https://en.wikipedia.org/wiki/Client%E2%80%93server_model
+- A distributed application architecture model
+- usually used to describe a networked service where multiple Clients
+  communicate with a single Server
+- The term 'work' is used to describe the inputs and outputs of such a
+  model. The 'work' performed is strictly scoped.
+   - For example, consider the architecture for an MMO video game. The
+     client-server model applies to the design of Players (=Clients=)
+     connecting to a match, which is hosted on the game server
+     (=Server=). The 'work' performed here may include updates to a
+     Player's in-game position based on control input, chat messages,
+     connection status, etc.
+   - In addition to communicating with the game server, Players may
+     establish direct connection to other Players in their match in a
+     /client-to-client/ or /decentralized/ manner, where 'work' is
+     shared and managed between the =Clients= themselves, under
+     authority of the =Server=. This is where terminology begins to
+     miss the point, as these features share a likeness to [[id:7bdea7d7-9596-4bf3-938d-b6e6f21fff53][p2p networking]].
+
+*** Peer-to-peer Networking
+  :PROPERTIES:
+  :ID: 7bdea7d7-9596-4bf3-938d-b6e6f21fff53
+  :AKA: p2p
+  :CUSTOM_ID: peer-to-peer-networking
+  :END:
+  - [[https://en.wikipedia.org/wiki/Peer-to-peer][Peer-to-peer - Wikipedia]]
+  #+begin_quote
+  Peer-to-peer (P2P) computing or networking is a distributed application architecture that
+  partitions tasks or workloads between peers. Peers are equally privileged, equipotent
+  participants in the application. They are said to form a peer-to-peer network of nodes. 
+
+  Peers make a portion of their resources, such as processing power, disk storage or network
+  bandwidth, directly available to other network participants, without the need for central
+  coordination by servers or stable hosts. Peers are both suppliers and consumers of
+  resources, in contrast to the traditional client–server model in which the consumption and
+  supply of resources is divided.
+  #+end_quote
+** Protocols
+:PROPERTIES:
+:ID:       368acc88-b789-4a4e-9c90-72c5e37bd35b
+:CUSTOM_ID: protocols
+:END:
+- [[id:bf08b5d0-5745-4fa1-bb2e-7715b9f29a22][QUIC]]
+- [[https://www.cs.unc.edu/~dewan/242/s07/notes/ipc/node26.html][Process to Process Communication: UDP and TCP/IP]]
+*** TCP                                                         :transport:
+:PROPERTIES:
+:ID: 4b1299e8-73db-4e8c-b854-5a9eea1d50c7
+:CUSTOM_ID: tcp
+:END:
+Transport Control Protocol
+- https://tools.ietf.org/html/rfc793
+- [[https://en.wikipedia.org/wiki/TCP_delayed_acknowledgment][TCP delayed acknowledgment - Wikipedia]]
+*** UDP                                                         :transport:
+:PROPERTIES:
+:ID: ed2c78ea-8935-4f05-b1be-8d9af0ff045f
+:CUSTOM_ID: udp
+:END:
+- User Datagram Protocol
+- https://tools.ietf.org/html/rfc768
+- [[https://www.embedded.com/speed-up-machine-to-machine-networking-with-udp/][Speed Up Machine-to-Machine Networking with UDP]]
+**** *UDP vs TCP*
+:PROPERTIES:
+:ID:       b34a9d4a-7ff0-4566-8cd4-dce03cd0ee05
+:CUSTOM_ID: udp-vs-tcp
+:END:
+   - *UDP and TCP share the same space* in a network stack and operate
+     on top of the IP protocol.
+   - *UDP has no built-in notion of State*, TCP does. However,
+     stateless protocols can be built on lower-level stateful
+     ones.. and vice-versa. It's just a matter of abstraction.
+	 - for example =HTTP= is a /stateless/ protocol, built
+       on TCP (/stateful/), which is built on IP (/stateless/)
+   - *TCP provides connection guarantees* that a client receives
+     packets IN ORDER and exactly in the condition they were sent
+     (thanks to checksums in headers), at the cost of some performance
+     (to ensure packet sequencing, checking headers, establishing
+     connection, etc)
+     - *UDP does NOT provide connection guarantees*.
+       - UDP does have checksums though, and thus
+         ensures packets are received in same
+         condition that they were sent.
+     - Packets can be sent and lost, it doesn't intrinsically matter
+       in UDP that the client didn't receive them.
+     - The loss of built-in guarantees does come with a performance
+       boost though, as well as a network protocol that is quite
+       flexible in its simplicity.
+
+***** *The need for speed*
+:PROPERTIES:
+:ID:       18be5216-cf69-4472-9fee-9a325eba6ee8
+:CUSTOM_ID: the-need-for-speed
+:END:
+UDP is on the rise in networks due to the usage of P2P
+services, and the need for more /immediate/ methods of
+streaming media data at scale.
+[[https://www.caida.org/research/traffic-analysis/tcpudpratio/][Analyzing UDP usage in Internet traffic]]
+
+**** resources
+:PROPERTIES:
+:ID:       524c9e2f-4078-4776-bbfb-1d1aa2f96efc
+:END:
+- [[https://tools.ietf.org/html/rfc768][RFC 768 - User Datagram Protocol]]
+- [[https://hpbn.co/building-blocks-of-udp/][Networking 101: Building Blocks of UDP - High Performance Browser Networking (O'Reilly)]]
+*** TLS
+:PROPERTIES:
+:ID: fd5ea91a-a6aa-4947-9640-c0bf81c85cb0
+:CUSTOM_ID: tls
+:END:
+Transport Layer Security
+- https://www.internetsociety.org/deploy360/tls/basics/
+-  [[https://tools.ietf.org/html/rfc5246][TLS 1.2]]
+-  [[https://tools.ietf.org/html/rfc8446][TLS 1.3]]
+*** HTTP
+:PROPERTIES:
+:ID: 049defda-3ac2-4cf1-86ec-060f0a77a5cf
+:CUSTOM_ID: http
+:END:
+- https://developer.mozilla.org/en-US/docs/Web/HTTP
+
+#+begin_quote
+Hypertext Transfer Protocol (HTTP) is an application-layer protocol
+for transmitting hypermedia documents, such as HTML. It was designed
+for communication between web browsers and web servers, but it can
+also be used for other purposes. HTTP follows a classical
+client-server model, with a client opening a connection to make a
+request, then waiting until it receives a response. HTTP is a
+stateless protocol, meaning that the server does not keep any data
+(state) between two requests. Though often based on a TCP/IP layer, it
+can be used on any reliable transport layer, that is, a protocol that
+doesn't lose messages silently like UDP does. RUDP — the reliable
+update of UDP — is a suitable alternative.
+#+end_quote
+#+begin_center
+-- [[https://developer.mozilla.org/en-US/docs/Web/HTTP][MDN web docs]]
+#+end_center
+
+**** HTTPS
+:PROPERTIES:
+:ID:       fb05567a-224f-4492-b30c-f4718a854da8
+:CUSTOM_ID: https
+:END:
+HTTPS consists of HTTP with the addition of [[file:../../../../Z/core/notes/tls.org][TLS]].
+
+**** HTTP/S
+:PROPERTIES:
+:ID:       289c6f90-86fb-4b7b-aed6-4ca8ce27894e
+:CUSTOM_ID: http-s
+:END:
+HTTP/S is often used as a blanket statement for both HTTP and HTTPS.
+
+*** WebSocket
+:PROPERTIES:
+:ID:       2895ce01-4417-4588-8c3b-15dab28a303e
+:CUSTOM_ID: websocket
+:END:
++ rfc :: [[https://datatracker.ietf.org/doc/html/rfc6455][6455]]
+- layer on top of TCP
+- [[https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API][The WebSocket API (WebSockets) - Web APIs | MDN]]
+*** QUIC
+:PROPERTIES:
+:ID: bf08b5d0-5745-4fa1-bb2e-7715b9f29a22
+:CUSTOM_ID: quic
+:END:
+- https://www.chromium.org/quic
+
+ Transport-layer network protocol, part of the Chromium project.
+  - Leverages the benefits of building on top of UDP instead of TCP
+  - Designed as a re-implementation of TCP+TLS+HTTP/2
+  - Great documentation (ty Mr. Google) + has Rust implementations
+    (yay!) which leads us to:
+  - [[https://crates.io/crates/quinn][Quinn]]
+    - Rust implementation of the QUIC protocol.
+    - Super awesome-cool
+    - provides an API built with tokio
+    - provides the core /deterministic state machine/ of the protocol
+      via [[https://github.com/djc/quinn/tree/master/quinn-proto][=quinn-proto=]]
+  - [[https://www.chromium.org/quic/playing-with-quic][Playing With QUIC]] provides documentation on how to set up a test
+    client/server from the chromium source, a bit verbose for our needs
+    but relevant
+**** QUIC at 10,000 feet                                             :net:
+:PROPERTIES:
+:ID:       51a999ce-19fc-40e6-af4e-09cab193c9ac
+:END:
++ [[https://docs.google.com/document/d/1gY9-YNDNAB1eip-RTPbqphgySwSNSDHLq9D5Bty4FSU][src]] <-
+**** drafts
+:PROPERTIES:
+:ID:       8cfb37e7-3529-455d-a1ab-9ad07d600ea5
+:END:
+CREATED: [2020-07-31 Fri 00:36]
+- [[https://tools.ietf.org/html/draft-tsvwg-quic-protocol-02][draft-wg-02]] 
+- [[https://tools.ietf.org/html/draft-ietf-quic-transport-29][draft-ietf-quic-transport-29 - QUIC: A UDP-Based Multiplexed and Secure Transport]]
+- [[https://tools.ietf.org/html/draft-ietf-quic-invariants-09][draft-ietf-quic-invariants-09 - Version-Independent Properties of QUIC]]
+- [[https://tools.ietf.org/html/draft-iyengar-quic-delayed-ack-00][draft-iyengar-quic-delayed-ack-00 - Sender Control of Acknowledgement Delays in QUIC]]
+- [[https://quicwg.org/][QUIC Working Group]]
+** links
+:PROPERTIES:
+:ID:       f5fabb7c-c8c1-416d-bfc8-ce1659ab6866
+:END:
+- [[https://tools.ietf.org/html/rfc6815][RFC 6815 - Applicability Statement for RFC 2544: Use on Production Networks Considered Harmful]]
+- [[https://www.freesoft.org/CIE/index.htm][Connected: An Internet Encyclopedia]]
+- [[https://www.freesoft.org/CIE/RFC/1831/index.htm][RFC 1831]]
+- [[https://www.ietf.org/rfc/rfc1014.txt][XDR: External Data Representation Standard]]
+  - seems bulky, but very useful reference due to the breakdown of different types and their definitions.
+- [[http://www3.cs.stonybrook.edu/~mikepo/][Michalis Polychronakis]]
+  cool d00d - interesting research
+- http://an.kaist.ac.kr/~shinae/paper/2016-netsoft.pdf
+  Exploiting Integrated GPUs for Network Packet Processing Workloads
+  - netsoft 2016
+- [[https://doc-kurento.readthedocs.io/en/6.9.0/knowledge/rtp_streaming.html][RTP Streaming Commands — Kurento 6.9.0 documentation]]
+- [[https://en.wikipedia.org/wiki/Ephemeral_port][Ephemeral port - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Multiplexing][Multiplexing - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Frequency-division_multiplexing][Frequency-division multiplexing - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Wavelength-division_multiplexing][Wavelength-division multiplexing - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Polarization-division_multiplexing][Polarization-division multiplexing - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Time-division_multiplexing][Time-division multiplexing - Wikipedia]]
+-  [[https://en.wikipedia.org/wiki/Orbital_angular_momentum_multiplexing][Orbital angular momentum multiplexing - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Fiber-optic_communication#Background][Fiber-optic communication - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Photophone][Photophone - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Routing_Information_Protocol][Routing Information Protocol - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Satellite_navigation][Satellite navigation - Wikipedia]]
+  Position, Navigation, and Timing
+- [[https://en.wikipedia.org/wiki/Time_signal][Time signal - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Precision_Time_Protocol][Precision Time Protocol - Wikipedia]]
+- [[https://1.ieee802.org/tsn/802-1as-rev/][P802.1AS-Rev – Timing and Synchronization for Time-Sensitive Applications |]]
+- [[https://en.wikipedia.org/wiki/Network_speaker][Network speaker - Wikipedia]]
+- [[https://books.google.com/books?id=5CaDBAAAQBAJ&pg=PT103&lpg=PT103&dq=cambridgematrix&source=bl&ots=IPFEA0mP5u&sig=ACfU3U2CZwA9H2nrhLxg3B91ZR5raSS7AQ&hl=en&sa=X&ved=2ahUKEwiV7YTA18jqAhUkoXIEHQQvC9MQ6AEwA3oECAwQAQ#v=onepage&q=cambridgematrix&f=false][brief mention of CambridgeMatrix - hunt this down]]
+  - Everything I've found on the Strawberry Fair is unvalidated,
+    online articles discussing the implementation of custom mesh
+    network on June 3rd, 2006 are just copy/pasting the Wiki.
+  - original article is here (DNS broked)
+    http://www.cambridgeshiretouristguide.com/Articles/Article_55.asp -
+    trying to find it on web.archive, will search YouTube later
+  - CambridgeMatrix sounds like a lead, would be surprised if there is
+    no connection to the Strawberry Fair
+- [[https://en.wikipedia.org/wiki/Hazy_Sighted_Link_State_Routing_Protocol][Hazy Sighted Link State Routing Protocol - Wikipedia]]
+  link-state algorithm at CUWiN
+- [[https://en.wikipedia.org/wiki/Expected_transmission_count][Expected transmission count - Wikipedia]]
+- [[http://www.dsn.jhu.edu/software.html][Software: Distributed Systems and Networks Lab]]
+  C src from the lads over at JHU
+  from da Italians
+- [[https://en.wikipedia.org/wiki/Optical_mesh_network][Optical mesh network - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Free-space_optical_communication][Free-space optical communication - Wikipedia]]
+- [[http://www.vlcc.net/modules/xpage0/?ml_lang=en][Visible Light Communications Consotium (VLCC) - What's Visible Light Communications?]]
+- [[https://www.researchgate.net/profile/Volker_Jungnickel/publication/264595391_High-Speed_Visible_Light_Communication_Systems/links/55202e000cf2a2d9e1433634/High-Speed-Visible-Light-Communication-Systems.pdf][High Speed Visible Light Communication Systems - pdf researchgate]]
+- [[https://en.wikipedia.org/wiki/Visible_light_communication][Visible light communication - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Mesh_networking][Mesh networking - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/InfiniBand][InfiniBand - Wikipedia]]
+- [[https://en.wikipedia.org/wiki/Anycast][Anycast - Wikipedia]]
+  - unicast, broadcast, multicast, anycast, geocast
+- [[https://en.wikipedia.org/wiki/Multicast][Multicast - Wikipedia]]
+- [[https://blogs.akamai.com/sitr/2019/07/anatomy-of-a-syn-ack-attack.html][Anatomy of a SYN-ACK attack - Akamai Security Intelligence and Threat Research Blog]]
+  

@@ -1,0 +1,132 @@
+#+TITLE: org-notion
+#+DATE: 2022-01-24 Mon
+#+DESCRIPTION: Notion.so Org-mode Extension
+#+FILETAGS: :emacs:org:elisp:
+#+SETUPFILE: ../clean.theme
++ source code: [[https://hg.rwest.io/org-notion]]
+  - [[https://github.com/richardwesthaver/org-notion][github mirror]]
+[[https://orgmode.org/][Org-mode]] is the [[https://www.gnu.org/software/emacs/][GNU Emacs]] major-mode for keeping notes, maintaining
+TODO lists, and project planning. It is a very powerful text-based
+system for organizing your life in plaintext.
+
+[[https://www.notion.so][Notion]] is a web-based application with a similar purpose. It works
+well on all platforms and has some cool features including databases,
+realtime collaboration, and as of 2021 an [[https://developers.notion.com/][official API]].
+
+=org-notion= is an Emacs package that uses this API to integrate the
+beauty of Notion with your Org-mode workflow.
+
+* Overview
+Many moons ago I used Notion.so as a notes and collaboration tool
+for work. It's easy to use and is (in my opinion) the best
+web-based solution out there. I have always used Org-mode for
+personal ventures of course, but it is a pain to integrate with
+non-tech folks. Even tech folks will roll their eyes if your
+company-hosted repo has a README.org instead of the tried and true
+README.md. I decided to abandon Notion.so because I couldn't wait
+for the overdue official API to be released, and was unsatisfied
+with the unofficial variants. Nowadays, that story has changed. As
+of 2021 the official API is available and ready for action.
+
+This package wraps the full Notion API with support for all web
+requests and object types. The requests are dispatched asynchronously
+via the methods specializing on the =org-notion-request= EIEIO class
+instance. The responses are parsed to create a subclass instance of
+=org-notion-object= which contain the actual contents as
+=org-notion-rich-text= instances. This is the low-level interface
+which can be hacked to your liking.
+
+All classes are shown below. There's an abstract =org-notion-class=
+which all classes inherit as well as a special =org-notion-cache=
+class which stores a cache of =org-notion-object= instances.
+#+begin_example
+org-notion-class                      
+  +--org-notion-request               
+  +--org-notion-cache                 
+  +--org-notion-object           
+  |    +--org-notion-block       
+  |    +--org-notion-page        
+  |    +--org-notion-database    
+  |    +--org-notion-user        
+  +--org-notion-rich-text             
+  |    +--org-notion-inline-equation  
+  |    +--org-notion-inline-mention   
+  |    +--org-notion-inline-text      
+#+end_example
+
+The parsing is achieved with the help of [[https://orgmode.org/worg/dev/org-element-api.html][org-element]] and [[https://github.com/emacs-mirror/emacs/blob/master/lisp/json.el][json.el]]. An
+=org-notion-mode= minor-mode is provided for interacting with the API
+from an Org buffer and custom properties are used to keep
+headlines/files in sync with their Notion counterparts.
+
+* Installation
+=org-notion= only depends on built-in Emacs libraries. To
+install, simply clone the repo:
+#+begin_src shell
+  git clone https://github.com/richardwesthaver/org-notion
+  # OR `hg clone https://hg.rwest.io/org-notion`
+#+end_src
+
+and make sure your =load-path= is setup correctly in your config:
+#+begin_src emacs-lisp
+  (add-to-list 'load-path "/path/to/org-notion")
+#+end_src
+
+Now you can load the package with:
+#+begin_src emacs-lisp
+  (require 'org-notion)
+#+end_src
+
+This package will be uploaded to MELPA upon reaching v1.0.0.
+
+* Configuration
+You should create a [[https://www.notion.so/my-integrations][private integration]] on the Notion side if you
+haven't already. This will generate a new Internal Integration Token
+which is used to authenticate API requests from Emacs.
+
+When running a command for the first time such as
+=org-notion-get-users= you will be prompted for your token. This is
+cached internally for future calls but will not persist across
+sessions (after restarting the emacs daemon).
+
+The default behavior is to first check with [[https://www.gnu.org/software/emacs/manual/html_mono/auth/index.html][auth-sources]] before
+sending requests (=~/.authinfo= or =~/.authinfo.gpg=). This is highly
+recommended as it avoids the prompt and is more secure. You can
+disable the check if you wish to temporarily use a different token
+with =(setq org-notion-check-auth-source nil)=.
+
+* Usage
+The autoloaded functions in this package provide the high-level
+interface. Most notable of these is =org-notion-mode=, which is a
+minor-mode you can add as a hook to =org-mode=.
+
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook #'org-notion-mode)
+#+end_src
+
+You can customize the keymap =org-notion-mode-map= to your liking. The
+defauls are show below.
+
+#+tblname: org-notion-mode-map
+| key       | function            | description                     |
+|-----------+---------------------+---------------------------------|
+| C-c n p   | org-notion-push     | Push local changes to Notion    |
+| C-c n f   | org-notion-pull     | Pull remote changes from Notion |
+| C-c n o   | org-notion-browse   | Open Notion page in browser     |
+| C-c n r s | org-notion-search   | Search Notion                   |
+| C-c n r u | org-notion-get-user | Get Notion Users                |
+
+
+* Resources
+- Notion
+  - [[https://developers.notion.com/][API docs]]
+  - [[https://developers.notion.com/page/examples][examples]]
+- Emacs
+  - [[https://www.gnu.org/software/emacs/manual/html_mono/url.html][url]]
+  - [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Parsing-JSON.html][parsing json]]
+  - [[https://www.gnu.org/software/emacs/manual/html_node/ert/index.html][ert]]
+  - [[https://www.gnu.org/software/emacs/manual/html_node/eieio/][eieio]]
+  - [[https://orgmode.org/worg/dev/org-element-api.html][org-element]]
+- Prior Art
+  - [[https://github.com/ahungry/org-jira][ahungry/org-jira]]
+  - [[https://github.com/RadekMolenda/org-notion][RadekMolenda/org-notion]]

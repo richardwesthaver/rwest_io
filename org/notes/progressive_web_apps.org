@@ -1,0 +1,55 @@
+#+TITLE: Progressive Web Apps
+#+DATE: 2019-09-10 Tue
+#+FILETAGS: :app:web:wasm:js:
+#+SETUPFILE: ../clean.theme
+* PWAs Today
+:PROPERTIES:
+:ID:       1ecb433e-f44b-4ec1-a2d5-e3507dab72fa
+:CUSTOM_ID: pwas-today
+:END:
+** What is a PWA and Why Should You Care?
+:PROPERTIES:
+:CUSTOM_ID: what
+:END:
++ [[https://blog.bitsrc.io/what-is-a-pwa-and-why-should-you-care-388afb6c0bad][src]] <-
+- gives the basic highlights
+  - read "Why we need PWAs and what are their features?" section for tl;dr
+- DemoTime: [[https://www.fidgetspin.xyz/][Fidget Spinner]] --> F12 goto 'Applications' tab
+** PWAs - Google Dev
+:PROPERTIES:
+:CUSTOM_ID: google-dev
+:END:
++ [[https://developers.google.com/web/progressive-web-apps/][src]] <-
+- need manifest.json, service worker with offline capabilities
+- to trigger install-prompt in chrome - need to have some kind of initial engagment with the app
+** Connecting the dots
+:PROPERTIES:
+:CUSTOM_ID: connecting-dots
+:END:
+- [[https://uxdesign.cc/pwas-are-the-future-d51aae1f3af7][UX Perspective]]
+* PWAs Tomorrow
+:PROPERTIES:
+:CUSTOM_ID: pwas-tomorrow
+:END:
+  - some of this might get rather technical
+** PWAs have dependencies
+:PROPERTIES:
+:CUSTOM_ID: dependencies
+:END:
++ [[https://blog.chromium.org/2016/08/from-chrome-apps-to-web.html][src]] <-
+- this is an old post so nothing to worry about in the short term, but the PWA ecosystem is highly dependent on gatekeepers
+- gatekeepers make the rules and set prescribed tech through the manifest.json approval process
+- potential for support for systems tech to be dropped - large tech debt to overcome
+** quick note on this article
+:PROPERTIES:
+:CUSTOM_ID: quick-note
+:END:
+  [[https://developers.google.com/web/ilt/pwa/introduction-to-service-worker][Service Workers]]
+   #+begin_quote
+   Because the service worker is not blocking (it's designed to be fully asynchronous) synchronous XHR and localStorage cannot be used in a service worker.
+   #+end_quote
+* QA Automation checklist
+:PROPERTIES:
+:CUSTOM_ID: qa-checklist
+:END:
+- [[https://developers.google.com/web/progressive-web-apps/checklist][PWA Checklist]]

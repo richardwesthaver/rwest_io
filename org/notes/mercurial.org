@@ -1,0 +1,375 @@
+#+TITLE: Mercurial
+#+DATE: 2020-11-12 Thu
+#+FILETAGS: :vcs:
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
+#+SETUPFILE: ../clean.theme
+- https://www.mercurial-scm.org/
+
+#+begin_quote
+Mercurial is a free, distributed source control management tool. It
+efficiently handles projects of any size and offers an easy and
+intuitive interface.
+#+end_quote
+
++ [[https://www.mercurial-scm.org/guide][guide]]
++ [[https://mozilla-version-control-tools.readthedocs.io/en/latest/index.html][mozilla tools]]
++ [[https://www.mercurial-scm.org/wiki/RepositoryCorruption][dealing with corruption]]
+
+* Why Mercurial?
+:PROPERTIES:
+:CUSTOM_ID: why
+:END:
+[[https://git-scm.com/][Git]] and [[https://www.mercurial-scm.org/][Mercurial]] are two different tools with the same job, it has just been my
+experience that Mercurial does them a little bit better for my workflow, and I am able
+to build things faster using it.
+
+- Mercurial is designed to provide tools for /building/ a DVCS, and encourages you to
+  expand your knowledge about the system to reap the benefits it provides. With Git I
+  found myself often avoiding the implementation details in favor of quick-fixes and
+  ugly scripts. On the other hand, I feel much more comfortable /designing/ a solution
+  with the tools Mercurial provides.
+
+- the Mercurial system has features such as immutable commits and branches, which can be
+  quite dangerous. There are ways to 'fix' changes made by these commands, but they go
+  against the grain of the rest of the system. Git on the other hand lets you seamlessly
+  edit commits and close branches, which can be life-savers when Billy the Intern
+  commits to master.
+
+- Mercurial also has superior features for exporting native repository to different DVCS
+  (Git, Darcs, SVN), making it more useful in scenarios where a repo needs to be shared
+  with users or tools that are unfamiliar with the 'hg' command.
+
+- Overall, the choice is a personal one. Over time I have felt less constrained, as if
+  there were less rules to follow with Mercurial. This is a far-cry from my first
+  experience with it, where I felt the complete opposite.
+
+* Web Hosting
+:PROPERTIES:
+:CUSTOM_ID: web-hosting
+:END:
+Hosting with vanilla Mercurial is quite similar to vanilla Git. =hg serve= is basically
+the equivalent to =git instaweb=. Where they differ is in the out-of-box solutions - Git
+has cgit, GitLab, Gitolite, git.sr.ht, etc. Mercurial has hg.sr.ht, and just recently
+Heptapod, which is not production-ready.
+
+My experience with self-hosting the sr.ht eco-system was far from a good one due to
+conflicting dependencies, package manager incompatibility, and some classic PHP
+craziness. The Heptapod docker container took eons just to build tests, so I just gave
+up on that for now but will be on the look out for new developments with that
+project. So what we're really left with is the built-in tools. Lucky for us, we have the
+[[https://www.mercurial-scm.org/wiki/PublishingRepositories#hgweb][hgweb]] scripts at our disposal.
+
+Here's the relevant docs covering all topics in this section. They are all must-reads if
+you plan on exposing a Mercurial server to the public.
+
+- [[https://www.mercurial-scm.org/wiki/PublishingRepositories][PublishingRepositories - Mercurial]]
+- [[https://www.mercurial-scm.org/wiki/SecuringRepositories][SecuringRepositories - Mercurial]]
+- [[https://www.mercurial-scm.org/wiki/AuthorizingUsers][AuthorizingUsers - Mercurial]]
+
+- hgweb + wsgi + nginx \\
+  The hgweb script is used for deployment of the server via CGI or WSGI. The WSGI setup
+  is a bit more involved, but according to the docs:
+  #+begin_quote
+  (!) Much better performance can be achieved by using WSGI instead of CGI.
+  #+end_quote
+
+  This section covers the WSGI (pronounced /whis/-/gee/) setup, specifically for
+  Nginx. The docs have better examples for Apache servers, so you do need to go off the
+  beaten path to find just the right values to set in Nginx. The following setup worked
+  for https://hg.rwest.io running Arch Linux.
+
+  - dependencies \\
+    - =uwsgi= and =uwsgi-plugin-python= are required for the hgweb.wsgi script.
+    - =nginx= is used here, but...
+    - =apache= package is needed if you want to use ~htpasswd~ while setting up HTTP
+      Authentication. SSH auth only or public hosts don't need this.
+  - /etc/uwsgi/hgweb.ini \\
+    This is a UWSGI service configuration file - the =hgweb.wsgi= script needs to be
+    located in the directory specified by =chdir=. If you are using systemd, try
+    enabling the service with =systemctl enable uwsgi@hgweb.service=, and check the logs
+    for any errors. The service calls the hgweb.wsgi script, which serves all repos
+    configured via =hgweb.conf=.
+    #+begin_example
+    [uwsgi]
+    master = true
+    ; max-requests = 1000
+    ; logto = {log file path}/hgweb-uwsgi.log
+    uid = hgweb ; set process owner
+    gid = hgweb
+    stats = /run/uwsgi/stats.sock
+    chmod-socket = 666
+    cap = setgid,setuid
+    ; https://www.mercurial-scm.org/wiki/PublishRepositoriesOnNginx
+    plugins = python
+    socket = /run/uwsgi/hgweb.sock
+    chdir = /home/hgweb/hg
+    wsgi-file = hgweb.wsgi
+    ; https://stackoverflow.com/questions/15878176/uwsgi-invalid-request-block-size
+    ; http://uwsgi-docs.readthedocs.io/en/latest/ThingsToKnow.html
+    ; buffer-size = 65535
+    #+end_example
+
+  - hgweb.wsgi \\
+    The config path must be a byte string, and an absolute path. This script needs to be
+    in the same directory as =hgweb.conf=.
+    #+begin_src python
+    #!/usr/bin/env python3
+    config = b"/home/hgweb/hgweb.conf"
+    # Uncomment to send python tracebacks to the browser if an error occurs:
+    #import cgitb; cgitb.enable()
+    # enable demandloading to reduce startup time
+    from mercurial import demandimport; demandimport.enable()
+    from mercurial.hgweb import hgweb
+    application = hgweb(config)
+    #+end_src
+
+  - hgweb.conf \\
+    Mercurial web server configuration file. Setting staticurl to =/static= allows us to
+    pass serving of static content to Nginx, which is faster and has better caching
+    controls.
+    #+begin_example
+    [web]
+    encoding = UTF-8
+    baseurl = https://hg.rwest.io
+    contact = some_dude
+    templates = theme
+    style = spartan
+    logourl = https://rwest.io
+    staticurl = /static
+    descend = True
+    collapse = True
+    [paths]
+    / = src/*
+    #+end_example
+
+  - /etc/nginx/sites-enabled/hg.conf \\
+    Note that none of the extra uwsgi params from mercurial docs are used here, only the
+    default uwsgi_params files provided by Nginx.
+    #+begin_example
+    server {
+      server_name hg.rwest.io;
+      listen 443 ssl;
+      ssl_certificate fullchain.pem;
+      ssl_certificate_key privkey.pem;
+      ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+      ssl_ciphers HIGH:!aNULL:!MD5;
+      root /home/hgweb/hg;
+      location / {
+        limit_except GET HEAD {
+          auth_basic "Mercurial userspace";
+          auth_basic_user_file /home/hgweb/hg/hg.htpasswd;
+        }
+      include uwsgi_params;
+      uwsgi_pass unix:/run/uwsgi/hgweb.sock;    
+    }
+
+    location /static {
+      alias /home/hgweb/hg/static;
+      expires 30d;
+    }
+  }
+    #+end_example
+
+* Bundles
+:PROPERTIES:
+:CUSTOM_ID: bundles
+:END:
+Hg Bundles are a more powerful version of [[https://git-scm.com/docs/git-bundle/2.8.6][git bundles]] and come in two flavors:
+Clonebundles and Pullbundles. They share a common format, support the =bundle= and
+=unbundle= commands, but are also used to provision their own commands: =hg clone= and
+=hg pull= respectively. Bundles are advertised via manifest files located in the =.hg=
+directory of a repo, and support a variety of compression backends via the ~BUNDLESPEC~
+value specified in manifest.
+- Bundlespec
+   - none-v2
+   - gzip-v2
+   - zstd-v2
+   - stream-v2
+- Manifests
+  - clonebundles.manifest
+  - pullbundles.manifest
+  - manifest.json
+- Hosting
+  - https://pkg.rwest.io/hg/
+* Mercurial <-> Git interop
+  :PROPERTIES:
+  :CUSTOM_ID: mercurial-git-interop
+  :END:
+  - as of 2022 I've been using [[https://github.com/frej/fast-export][hg-fast-export]] to convert my hg repos
+    to git so they can be mirrored [[https://github.com/richardwesthaver][on github]].
+
+    It is quite easy to integrate this process with CI:
+
+    #+begin_src makefile
+      # >> make mirror
+      # root path
+      ROOT=$(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+      # this is wherever you pulled hg-fast-export to
+      STASH=~/stash
+      # path to hg-fast-export binary
+      FE=$(STASH)/fast-export/hg-fast-export.sh
+      mirror:$(FE) $(ROOT) out
+              mkdir -p out/$@;
+              git init out/$@;
+              cd out/$@ && \
+              git config core.ignoreCase false && git config push.followTags true && \
+              # run with '-M default' for default branch
+              $(FE) -r $(ROOT) -M default && git checkout HEAD && \
+              git remote add gh git@github.com:richardwesthaver/mpk.git && \
+              git push gh --all;
+              @rm -rf out/$@;
+    #+end_src
+
+    #+begin_src nimscript
+      # config.nims -- >> nim mirror
+      --hints:off
+
+      import std/distros
+      import std/os
+      import std/sequtils
+      from std/strutils import join
+
+      const
+        stash {.strdefine.}: string = expandTilde("~/stash")
+        fastexport {.strdefine.}: string = stash / "fast-export/hg-fast-export.sh"
+
+      proc getVcRoot(): string =
+        ## Try to get the path to the current VC root directory.
+        ## Return ``projectDir()`` if a ``.hg`` or ``.git`` directory is not found.
+        const
+          maxAttempts = 10
+        var
+          path = projectDir()
+          attempt = 0
+        while (attempt < maxAttempts) and (not (dirExists(path / ".hg") or (dirExists(path / ".git")))):
+          path = path / "../"
+          attempt += 1
+        if dirExists(path / ".hg"):
+          result = path
+        elif dirExists(path / ".git"):
+          result = path
+        else:
+          echo "no VC root found, defaulting to projectDir"
+          result = projectDir()  
+
+      task mirror, "push code to github mirror":
+        withDir stash:
+          exec "git init mpk"
+          withDir "mpk":
+            exec "git config core.ignoreCase false"
+            exec "git config push.followTags true"
+            exec fastexport & " -r " & getVcRoot() & " -M default"
+            exec "git checkout HEAD"
+            exec "git remote add gh git@github.com:richardwesthaver/mpk.git"
+            var args: seq[string]
+            when defined(f):
+              args.add("--force")
+            exec "git push gh --all --force " & args.join
+        
+          rmDir("mpk")
+    #+end_src
+  - Two different plugins - [[https://www.mercurial-scm.org/wiki/GitExtension][git]] and [[https://www.mercurial-scm.org/wiki/HgGit][hggit]], different features
+    - 'git' usage will treat a cloned repo as a git repo and just pull
+      branch heads into mercurial (.git directory and .hg directory present at root)
+    - 'hggit' will convert all changesets, branches, etc (.hg directory only)
+       - pulling changesets can be incredibly slow at times
+       - unlike vanilla hg, pulling from a git repo with hggit does NOT
+         support revision CLI flag ('-r 100' will not work), so the
+         standard method of doing an incremental pull is not possible
+       - expect unexpected behaviors. always have backups.
+    - hggit will often pull the 'github-pages' branch from repos using
+      GitHub Sites and treat it as the default branch in the resulting
+      clone. To make the repo usable you need to update to the 'master'
+      bookmark, and use that as default
+* Scripts
+:PROPERTIES:
+:CUSTOM_ID: scripts
+:END:
+- hg-pull.sh
+  #+begin_src shell
+#!/bin/bash
+# store the current dir
+CD=$(pwd)
+
+echo "Pulling in latest changes for all local repositories..."
+
+# Find all mercurial repositories, pull and update
+for i in $(find . -name ".hg" | cut -c 3-); do
+    echo "";
+    echo $i;
+
+    # We have to go to the .hg parent directory to call the pull command
+    cd "$i";
+    cd ..;
+    # pull and update
+    hg pull -u;
+    # go back to the CUR_DIR
+    cd $CD
+done
+
+echo "Done."
+
+  #+end_src
+- hg-bundle.sh
+  #+begin_src shell
+#!/bin/bash
+# bundle a tar.zst archive of Mercurial repositories.
+
+CD=$(pwd)
+WD=$HOME/stash/tmp
+OUT=$WD/bundle
+SRC_PATH=$HOME/src
+BUNDLE_NAME=bundle-$(date "+%Y%m%d").tar.zst
+
+echo "Building $BUNDLE_NAME in $WD..."
+
+mkdir -pv $OUT
+rm -rf $OUT/*
+rm -rf $WD/$BUNDLE_NAME
+
+cd $SRC_PATH
+
+# Find all mercurial repositories, create bundles and dump them to $OUT dir
+for i in $(find . -name ".hg" | cut -c 3-); do
+    echo "";
+    echo $i;
+
+    cd "$i";
+    cd ..;
+    hg bundle -a -t gzip-v2 $OUT/$(basename $(hg root)).hg.gz;
+    hg bundle -a -t zstd-v2 $OUT/$(basename $(hg root)).hg.zst;
+    hg bundle -a -t none-v2 $OUT/$(basename $(hg root)).hg;
+    hg debugcreatestreamclonebundle $OUT/$(basename $(hg root)).hg.stream;
+    echo "... Done.";
+    cd $SRC_PATH
+done
+
+cd $WD
+# this will take a while with ultra mode
+tar -I 'zstd --ultra -22' -cf $BUNDLE_NAME bundle/
+
+echo "Done."
+  #+end_src
+- hg-unbundle.sh
+  #+begin_src shell
+#!/bin/sh
+# unbundle a tar.zst archive of Mercurial repositories.
+# this will generate a directory name 'bundle' in '~/pkg/hg/'
+WD=$HOME/stash/tmp
+BUNDLE_NAME=bundle-$(date "+%Y%m%d")
+PKG_DIR=$HOME/pkg/hg
+echo "unbundling $i to $PKG_DIR/bundle"
+# the zstd options for tar no work for me, decompress archive (this should be MacOS only, maybe Win. need to add checks)
+unzstd $WD/$BUNDLE_NAME.tar.zst
+tar -xvf $WD/$BUNDLE_NAME.tar -C $PKG_DIR
+rm -rf $WD/$BUNDLE_NAME.tar.zst $WD/$BUNDLE_NAME.tar
+echo "Done."
+  #+end_src
+* Further Reading
+:PROPERTIES:
+:CUSTOM_ID: further-reading
+:END:
+- [[https://blog.nrwl.io/misconceptions-about-monorepos-monorepo-monolith-df1250d4b03c][Misconceptions about Monorepos: Monorepo != Monolith]] - Victor Savkin 2019
+- [[https://research.google/pubs/pub45424/][Why Google Stores Billions of Lines of Code in a Single Repository]] - Josh Levenberg, 2016
+
+

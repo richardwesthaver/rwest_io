@@ -1,0 +1,7 @@
+#+TITLE: projects
+#+DATE: 2021-06-20
+#+OPTIONS: ^:nil p:t
+#+SETUPFILE: clean.theme
+#+HTML: <div class="projects-entries">
+#+INCLUDE: "projects/sitemap" :lines "3-"
+#+HTML: </div>

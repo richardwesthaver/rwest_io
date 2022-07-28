@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-02-28 Mon 18:46 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rock &amp; Roll</title>
+<meta name="author" content="ellis" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" href="/static/tufte.css" type="text/css" />
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Rock &amp; Roll</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgcfa8100">1. The Database Engine</a></li>
+<li><a href="#orge1155dd">2. Why RocksDB?</a></li>
+<li><a href="#orgb5946d7">3. Exploring Rocks</a></li>
+<li><a href="#orge4c6614">4. Some Code</a></li>
+<li><a href="#orgd7992ae">5. Column Families</a>
+<ul>
+<li><a href="#orgb5589ff">5.1. IndraDB Implementation</a></li>
+</ul>
+</li>
+<li><a href="#org21bd8b2">6. Wrapping Up</a></li>
+</ul>
+</div>
+</div>
+<div class="abstract" id="org3fffa71">
+<p>
+0x0001 :: RocksDB Discovery for Document Storage
+</p>
+
+</div>
+
+<div id="outline-container-orgcfa8100" class="outline-2">
+<h2 id="orgcfa8100"><span class="section-number-2">1.</span> The Database Engine</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+RocksDB is a <i>persistent</i> key-value store, where Keys and Values are
+<b>arbitrary byte arrays</b>. It's maintained by the Facebook Database
+Engineering Team and built as a c++ library. <a href="https://raw.githubusercontent.com/facebook/rocksdb/gh-pages-old/intro.pdf">The Story of RocksDB</a>
+provides some background info and a <a href="https://github.com/facebook/rocksdb/wiki">wiki</a> is provided in the repo.
+</p>
+
+<p>
+Our goal right now is to make a simple <code>hello world</code> with RocksDB that
+will serve as the start of the info store.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orge1155dd" class="outline-2">
+<h2 id="orge1155dd"><span class="section-number-2">2.</span> Why RocksDB?</h2>
+<div class="outline-text-2" id="text-2">
+<ul class="org-ul">
+<li>i like it</li>
+<li>file system, storage medium, and mostly platform agnostic</li>
+<li><a href="https://github.com/facebook/rocksdb/wiki/Direct-IO">Direct-IO</a></li>
+<li>caters to a variety of use cases</li>
+</ul>
+
+
+<div id="org6074dbc" class="figure">
+<p><img src="./media/01/the_rock.jpg" alt="the_rock.jpg" />
+</p>
+<p><span class="figure-number">Figure 1: </span>the rock</p>
+</div>
+
+<p>
+moving on.
+</p>
+</div>
+</div>
+<div id="outline-container-orgb5946d7" class="outline-2">
+<h2 id="orgb5946d7"><span class="section-number-2">3.</span> Exploring Rocks</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+first step is to clone the repo and take a peak at the examples.
+</p>
+
+<ul class="org-ul">
+<li>clone repo &amp; compile static_lib</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-sh">git clone https://github.com/facebook/rocksdb &amp;&amp; <span class="org-builtin">cd</span> rocksdb
+make static_lib
+<span class="org-builtin">cd</span> examples/; make all
+</pre>
+</div>
+
+<p>
+the examples don't output anything to stdout when they're run, but many of them store database files under a directory in <code>/tmp</code> which can be inspected. after compiling the library in the root you get a <code>make_config.mk</code> which is include'd in <code>examples/makefile</code>. worth checking out to get a better understanding of how examples are compiled (with g++).
+</p>
+
+<p>
+let's take a look at the output of options_file_example:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh"><span class="org-builtin">cd</span> ./media/01/rocksdb_options_file_example &amp;&amp; ls
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">000012.log</td>
+</tr>
+
+<tr>
+<td class="org-left">CURRENT</td>
+</tr>
+
+<tr>
+<td class="org-left">IDENTITY</td>
+</tr>
+
+<tr>
+<td class="org-left">LOCK</td>
+</tr>
+
+<tr>
+<td class="org-left">LOG</td>
+</tr>
+
+<tr>
+<td class="org-left">LOG.old.1621383828949925</td>
+</tr>
+
+<tr>
+<td class="org-left">MANIFEST-000011</td>
+</tr>
+
+<tr>
+<td class="org-left">OPTIONS-000009</td>
+</tr>
+
+<tr>
+<td class="org-left">OPTIONS-000014</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+The LOG file looks like this:
+</p>
+<pre class="example" id="orgc892962">
+ 7f1c37455ac0 RocksDB version: 6.20.0
+ 7f1c37455ac0 Git sha a0e0feca6281e6f3c207757a15f6b99d3a67070d
+ 7f1c37455ac0 Compile date 2021-04-28 12:52:53
+ 7f1c37455ac0 DB SUMMARY
+ 7f1c37455ac0 DB Session ID:  73HSPOGLJMAK0WD2FX8D
+ 7f1c37455ac0 CURRENT file:  CURRENT
+ 7f1c37455ac0 IDENTITY file:  IDENTITY
+ 7f1c37455ac0 MANIFEST file:  MANIFEST-000004 size: 110 Bytes
+ 7f1c37455ac0 SST files in /tmp/rocksdb_options_file_example dir, Total Num: 0, files: 
+# ...
+</pre>
+
+<p>
+and the OPTIONS file like this:
+</p>
+<pre class="example" id="org06ea2d0">
+[Version]
+  rocksdb_version=6.20.0
+  options_file_version=1.1
+
+[DBOptions]
+# ...
+</pre>
+
+<p>
+DB <a href="https://github.com/facebook/rocksdb/wiki/RocksDB-Options-File">Option Files</a> are stored in <a href="https://en.wikipedia.org/wiki/INI_file">INI</a> format. There are a looooot of
+options and a lot of information shown in the LOG. Yikes!
+</p>
+</div>
+</div>
+
+<div id="outline-container-orge4c6614" class="outline-2">
+<h2 id="orge4c6614"><span class="section-number-2">4.</span> Some Code</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+After poking around in the wiki for a bit and learning about the
+<a href="https://github.com/facebook/rocksdb/wiki/Basic-Operations">Basic Operations</a>, we can build a helloworld-db tool of our own for
+testing. We'll also make a simple Makefile that compiles our code
+with <a href="https://clang.llvm.org/">Clang</a>. We're not going to do much with this program right now
+since the <a href="https://github.com/facebook/rocksdb/tree/master/examples">examples</a> and <a href="https://github.com/facebook/rocksdb/wiki">wiki</a> provide plenty of reading material.
+</p>
+
+<ul class="org-ul">
+<li><p>
+helloworld.cc
+</p>
+
+<p>
+boneless <code>simple_example.cc</code> from the examples
+</p>
+
+<div class="org-src-container">
+<pre class="src src-cpp"><span class="org-preprocessor">#include</span> <span class="org-string">&lt;iostream&gt;</span>
+<span class="org-preprocessor">#include</span> <span class="org-string">&lt;string&gt;</span>
+<span class="org-preprocessor">#include</span> <span class="org-string">&lt;vector&gt;</span>
+
+<span class="org-preprocessor">#include</span> <span class="org-string">"rocksdb/db.h"</span>
+<span class="org-preprocessor">#include</span> <span class="org-string">"rocksdb/options.h"</span>
+
+<span class="org-keyword">using</span> <span class="org-keyword">namespace</span> <span class="org-constant">rocksdb</span>;
+
+<span class="org-constant">std</span>::<span class="org-type">string</span> <span class="org-variable-name">db_path</span> = <span class="org-string">"infodb"</span>;
+<span class="org-type">DB</span>* <span class="org-variable-name">db</span>;
+<span class="org-type">Options</span> <span class="org-variable-name">options</span>;
+
+<span class="org-type">void</span> <span class="org-function-name">run</span>() {
+        options.IncreaseParallelism();
+        options.OptimizeLevelStyleCompaction();
+        options.create_if_missing = <span class="org-constant">true</span>;               
+        <span class="org-type">Status</span> <span class="org-variable-name">s</span> = <span class="org-constant">DB</span>::Open(options, db_path, &amp;db);
+        assert(s.ok());
+
+        <span class="org-constant">std</span>::<span class="org-type">string</span> <span class="org-variable-name">value</span>;      
+  s = db-&gt;Get(ReadOptions(), <span class="org-string">"some_key"</span>, &amp;value);
+  assert(s.IsNotFound());
+}
+
+<span class="org-type">int</span> <span class="org-function-name">main</span>() {
+        run();
+
+        <span class="org-keyword">delete</span> db;
+        <span class="org-keyword">return</span> 0;
+}
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><p>
+Makefile
+</p>
+
+<p>
+compile <code>helloworld.cc</code> with Clang, link rocksdb dynamically
+(for now). We can see the linked .so files with <code>ldd
+      ./helloworld</code> command after compiling.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-makefile"><span class="org-makefile-targets">.PHONY</span>: clean
+<span class="org-makefile-targets">_</span>: compile
+<span class="org-makefile-targets">compile</span>: helloworld.cc
+        clang++ -Wall helloworld.cc -ohelloworld -lrocksdb
+
+<span class="org-makefile-targets">clean</span>:
+        rm -rf helloworld
+</pre>
+</div></li>
+</ul>
+
+<p>
+After compiling with <code>make</code> and running <code>./helloworld</code> we get some
+files dumped to <code>./infodb</code> with the same structure as the
+examples.
+</p></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgd7992ae" class="outline-2">
+<h2 id="orgd7992ae"><span class="section-number-2">5.</span> Column Families</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+<a href="https://github.com/facebook/rocksdb/wiki/Column-Families">Column Families</a> are a feature of RocksDB that allows us to logically
+partition our database. HOWEVER, these are not 'columns' as they are
+known in relational databases. Column Families are simply a new
+namespace for key:val pairs. If we implement our Column Families
+correctly , we can <i>build</i> a full database model, relational or
+otherwise. These features are what makes embedded key:val stores
+like RocksDB unique - they are <b>primitive</b>, and allow developers an
+insane level of flexibility in their implementations.
+</p>
+
+<p>
+Going forward, how we partition our database through Column Families
+will play an important role in how useful it is, and how easily we
+can build additional layers of processing and API on top of it.
+</p>
+
+<p>
+For now, we'll just take a peek at <a href="https://github.com/indradb/indradb">IndraDB</a> and how Column Families
+are used in their implementation to store <a href="https://en.wikipedia.org/wiki/Graph_(abstract_data_type)">Graph</a> data structures.
+</p>
+</div>
+
+<div id="outline-container-orgb5589ff" class="outline-3">
+<h3 id="orgb5589ff"><span class="section-number-3">5.1.</span> IndraDB Implementation</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+IndraDB is a Graph Database library written in Rust. It's heavily
+inspired by <a href="https://www.cs.cmu.edu/~pavlo/courses/fall2013/static/papers/11730-atc13-bronson.pdf">TAO</a> (an excellent read btw) and allows for arbitrary
+<i>Properties</i> to be stored with any Node or Edge. IndraDB supports
+quite a few different backends, but we're only interested in the
+RocksDB impl, more specifically, <a href="https://github.com/indradb/indradb/tree/master/lib/src/rdb">lib/src/rdb</a>. The column family
+names can be found in <a href="https://github.com/indradb/indradb/blob/master/lib/src/rdb/datastore.rs">datastore.rs</a>:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-rust"><span class="org-keyword">const</span> <span class="org-variable-name">CF_NAMES</span>: [<span class="org-rust-ampersand">&amp;</span><span class="org-type">str</span>; 6] = [
+    <span class="org-string">"vertices:v1"</span>,
+    <span class="org-string">"edges:v1"</span>,
+    <span class="org-string">"edge_ranges:v1"</span>,
+    <span class="org-string">"reversed_edge_ranges:v1"</span>,
+    <span class="org-string">"vertex_properties:v1"</span>,
+    <span class="org-string">"edge_properties:v1"</span>,
+];
+</pre>
+</div>
+
+<p>
+<code>vertices</code>, <code>edges</code>, <code>edge_ranges</code>, and <code>reversed_edge_ranges</code> are
+directly derived from the TAO Model. <code>vertex_properties</code> and
+<code>edge_properties</code> represent encoded JSON objects (i.e. properties)
+that can be attached to <code>vertices</code> and <code>edges</code>. The first four
+Column Families are all we need to create the TAO Graph
+implementation so we'll focus on those and set aside properties.
+</p>
+
+<p>
+<b>Vertices</b> are ("vertex_id" : "vertex_type") and <b>Edges</b> are
+("edge_id" : "edge_type"), but what are 'edge_ranges' and
+'reversed_edge_ranges'? The answer is evident when we consider what
+we actually get from <code>vertices</code> and <code>edges</code>. We get a single k/v
+pair, but no way to connect them, which makes them pretty useless
+by themselves. <b>edge_ranges</b> can be thought of as <i>associations</i>
+between <b>vertices</b>, <i>indexed by time of insertion</i>. It boils down to
+a k/v pair, but the key is a struct that looks like this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-rust"><span class="org-keyword">pub</span> <span class="org-keyword">struct</span> <span class="org-type">EdgeKey</span> {
+    <span class="org-doc">/// The id of the outbound vertex.</span>
+    <span class="org-keyword">pub</span> <span class="org-variable-name">outbound_id</span>: <span class="org-type">Uuid</span>,
+
+    <span class="org-doc">/// The type of the edge.</span>
+    <span class="org-keyword">pub</span> <span class="org-variable-name">t</span>: <span class="org-type">Type</span>,
+
+    <span class="org-doc">/// The id of the inbound vertex.</span>
+    <span class="org-keyword">pub</span> <span class="org-variable-name">inbound_id</span>: <span class="org-type">Uuid</span>,
+}
+</pre>
+</div>
+
+<p>
+and the value is a timestamp, resulting in a single Edge pair
+being:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-rust"><span class="org-keyword">pub</span> <span class="org-keyword">struct</span> <span class="org-type">Edge</span> {
+    <span class="org-doc">/// The key to the edge.</span>
+    <span class="org-keyword">pub</span> <span class="org-variable-name">key</span>: <span class="org-type">EdgeKey</span>,
+
+    <span class="org-doc">/// When the edge was created.</span>
+    <span class="org-keyword">pub</span> <span class="org-variable-name">created_datetime</span>: <span class="org-type">DateTime</span>&lt;<span class="org-type">Utc</span>&gt;,
+}
+</pre>
+</div>
+
+<p>
+These Edges (or <i>associations</i>) can be found in both the
+edge_ranges and reversed_edge_ranges column families, with the
+<i>reversed</i> associations being derived from the same EdgeKey struct
+but with the <b>outbound and inbound ids swapped</b>. This allows us to
+create <i>bidirectional</i> edges (as well as support parts of the TAO
+model, but not worth getting into here).
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org21bd8b2" class="outline-2">
+<h2 id="org21bd8b2"><span class="section-number-2">6.</span> Wrapping Up</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+This post took much longer to write than I anticipated.. and perhaps
+I'm even still cutting it a bit short, but we covered some
+ground. In the next issue we'll ignore the database design and
+instead consider methods of moving volumes of arbitrary data into a
+common structured format.
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Date: 2021-04-28 Wed 00:00</p>
+<p class="author">Author: ellis</p>
+<p class="date">Created: 2022-02-28 Mon 18:46</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

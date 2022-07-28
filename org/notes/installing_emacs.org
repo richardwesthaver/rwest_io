@@ -1,0 +1,62 @@
+#+TITLE: Installing Emacs
+#+DATE: 2022-07-26 Tue
+#+FILETAGS: :cfg:emacs:
+#+OPTIONS: ^:nil num:nil toc:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
+#+SETUPFILE: ../clean.theme
+- refer to the INSTALL file in the root of the emacs repo for an
+  overview of install options
+- releases are hosted at [[https://ftp.gnu.org/gnu/emacs/]]
+
+* Releases
+:PROPERTIES:
+:CUSTOM_ID: releases
+:END:
+   For sanity checking, it's helpful to have access to older versions
+   of Emacs. We can download and verify a version like this:
+   #+begin_src shell :results silent
+#aria2c https://ftp.gnu.org/gnu/gnu-keyring.gpg -d /tmp/
+#gpg --import /tmp/gnu-keyring.gpg
+VERSION=24.2
+aria2c https://ftp.gnu.org/gnu/emacs/emacs-${VERSION}.tar.xz.sig -d /tmp/
+gpg --verify /tmp/emacs-${VERSION}.tar.xz.sig
+aria2c https://ftp.gnu.org/gnu/emacs/emacs-${VERSION}.tar.xz -d /tmp/
+tar -xf emacs-${VERSION}.tar.xz
+   #+end_src
+
+* Building from Source
+:PROPERTIES:
+:CUSTOM_ID: building_from_source
+:END:
+
+   First, clone the repo:
+     #+begin_src shell :results silent
+git clone https://git.savannah.gnu.org/git/emacs.git /tmp/emacs
+     #+end_src
+
+   Once the source is in hand, I stronly recommend making a separate
+   build directory and calling the configure script from there.
+
+   #+begin_src shell
+mkdir /tmp/emacs-build && cd /tmp/emacs-build
+../emacs/configure --with-mailutils --with-imagemagick --with-x-toolkit=athena --without-pop --without-sound --with-json --enable-link-time-optimization --with-native-compilation
+NATIVE_FULL_AOT=1 make -j8
+# test the build with './src/emacs' (location of output binary)
+# install emacs binaries on current system
+make install
+   #+end_src
+
+   The =configure= script takes a bunch of different flags that
+   customize the build, and generate a build-specific Makefile.
+
+   The next line compiles the source. Install with =make install= and
+   you're done! A custom Emacs binary with all the fixings has just
+   been installed for your current user. :)
+
+   Here are some of the other configuration flags worth investigating:
+
+   - --without-all
+   - --with-x-toolkit=no
+   - --without-x
+   - --without-dbus --without-gconf --without-gsettings
+
