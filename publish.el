@@ -4,8 +4,8 @@
 (require 'org-id)
 
 ;; location of source
-(defvar rwest_io-project-dir "~/dev/rwest_io")
-(defvar rwest_io-publish-dir "/sshx:hyde:/var/www/rwest.io")
+(defvar rwest-io-project-dir "~/dev/rwest-io")
+(defvar rwest-io-publish-dir "/sshx:hyde:/var/www/rwest.io")
 
 ;; use CUSTOM_ID for links
 (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id)
@@ -50,10 +50,10 @@ date and tags."
     (if (= (length filename) 0)
         (format "*%s*" entry)
       (format "[{{{filedate(%s)}}}] [[file:%s][%s]] {{{filetags(%s)}}}"
-	      (format "%s/%s/%s" rwest_io-project-dir (plist-get (cdr project) :base-directory) entry)
+	      (format "%s/%s/%s" rwest-io-project-dir (plist-get (cdr project) :base-directory) entry)
               entry
               filename
-	      (format "%s/%s/%s" rwest_io-project-dir (plist-get (cdr project) :base-directory) entry)
+	      (format "%s/%s/%s" rwest-io-project-dir (plist-get (cdr project) :base-directory) entry)
 	      ))))
 
 (setq org-html-postamble "<footer><div><p>created %d;<br>updated %C;</p></div></footer>")
@@ -77,13 +77,13 @@ date and tags."
 	 :recursive nil
 	 :htmlized-source t
 	 :html-preamble "<nav><a href = \"./\">home</a> | <a href = \"./blog.html\">blog</a> | <a href = \"./notes.html\">notes</a> | <a href = \"./projects.html\">projects</a></nav>"
-	 :publishing-directory ,rwest_io-publish-dir
+	 :publishing-directory ,rwest-io-publish-dir
 	 :org-publish-use-timestamps-flag nil
 	 :publishing-function org-html-publish-to-html)
 	("blog"
 	 :base-directory "org/blog"
 	 :base-extension "org"
-	 :publishing-directory ,(concat rwest_io-publish-dir "/blog")
+	 :publishing-directory ,(concat rwest-io-publish-dir "/blog")
 	 :org-publish-use-timestamps-flag nil
 	 :publishing-function org-html-publish-to-html
 	 :htmlized-source t
@@ -96,7 +96,7 @@ date and tags."
 	("notes"
 	 :base-directory "org/notes"
 	 :base-extension "org"
-	 :publishing-directory ,(concat rwest_io-publish-dir "/notes")
+	 :publishing-directory ,(concat rwest-io-publish-dir "/notes")
 	 :org-publish-use-timestamps-flag nil
 	 :publishing-function org-html-publish-to-html
 	 :htmlized-source t
@@ -107,9 +107,9 @@ date and tags."
 	 :sitemap-sort-files anti-chronologically
 	 :sitemap-format-entry org-sitemap-entry-format)
 	("projects"
-	 :base-directory "org/projects"
+	 :base-directory ,(concat rwest-io-project-dir "/projects")
 	 :base-extension "org"
-	 :publishing-directory ,(concat rwest_io-publish-dir "/projects")
+	 :publishing-directory ,(concat rwest-io-publish-dir "/projects")
 	 :org-publish-use-timestamps-flag nil
 	 :publishing-function org-html-publish-to-html
 	 :htmlized-source t
@@ -123,12 +123,16 @@ date and tags."
 	 :base-directory "org/media"
 	 :base-extension "css\\|txt\\|jpg\\|jpeg\\|gif\\|png\\|mp3\\|wav\\|flac\\|ogg\\|mp4"
 	 :recursive t
-	 :publishing-directory ,(concat rwest_io-publish-dir "/media")
+	 :publishing-directory ,(concat rwest-io-publish-dir "/media")
 	 :publishing-function org-publish-attachment)
 	("static"
 	 :base-directory "static"
 	 :base-extension "css\\|txt\\|jpg\\|gif\\|png"
 	 :recursive t
-	 :publishing-directory ,rwest_io-publish-dir
+	 :publishing-directory ,rwest-io-publish-dir
 	 :publishing-function org-publish-attachment)
 	("rwest.io" :components ("content" "blog" "notes" "projects" "media" "static"))))
+
+(defun rwest-io-publish ()
+  (org-publish "rwest.io" t t)
+  )

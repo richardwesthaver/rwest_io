@@ -13,7 +13,7 @@
 #+HTML_HEAD:     padding:  0;
 #+HTML_HEAD: }
 #+HTML_HEAD: html {
-#+HTML_HEAD:     font-size:  62.5%;
+#+HTML_HEAD:     font-size:  58.3%;
 #+HTML_HEAD: }
 #+HTML_HEAD: body {
 #+HTML_HEAD:     padding:  20px;
@@ -51,6 +51,18 @@
 #+HTML_HEAD: }
 #+HTML_HEAD: h3:before {
 #+HTML_HEAD:     content:  "**";
+#+HTML_HEAD:     left:  -2.5em;
+#+HTML_HEAD: }
+#+HTML_HEAD: h4:before {
+#+HTML_HEAD:     content:  "*** ";
+#+HTML_HEAD:     left:  -2.5em;
+#+HTML_HEAD: }
+#+HTML_HEAD: h5:before {
+#+HTML_HEAD:     content:  "**** ";
+#+HTML_HEAD:     left:  -2.5em;
+#+HTML_HEAD: }
+#+HTML_HEAD: h6:before {
+#+HTML_HEAD:     content:  "***** ";
 #+HTML_HEAD:     left:  -2.5em;
 #+HTML_HEAD: }
 #+HTML_HEAD: i, em, b, strong {
