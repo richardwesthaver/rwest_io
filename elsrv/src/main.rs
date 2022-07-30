@@ -1,3 +1,6 @@
+use elsrv::cfg::Cfg;
+
+use clap::Parser;
 use anyhow::Result;
 use async_session::{MemoryStore, Session, SessionStore};
 use std::result::Result as StdResult;
@@ -29,6 +32,7 @@ use tracing::trace;
 
 static COOKIE_NAME: &str = "SESSION_ID";
 static RWEST_IO: &str = "https://rwest.io";
+static UNAUTH_DEFAULT: &str = "visit `/auth/discord` to begin.";
 
 #[derive(Debug)]
 pub struct ClientState {
@@ -58,8 +62,8 @@ impl Default for ServerState {
   fn default() -> Self {
     ServerState {
       status: ServerStatus::Down,
-      rx_socket: "0.0.0.0:3000".parse().unwrap(),
-      tx_socket: "0.0.0.0:3000".parse().unwrap(),
+      rx_socket: "127.0.0.1:3000".parse().unwrap(),
+      tx_socket: "127.0.0.1:3000".parse().unwrap(),
       clients: vec![],
       location: PathBuf::from("."),
     }
@@ -100,42 +104,55 @@ async fn main() -> Result<()> {
   tracing_subscriber::registry()
     .with(tracing_subscriber::EnvFilter::new(
       std::env::var("RUST_LOG")
-        .unwrap_or_else(|_| "org_server=debug,tower_http=debug".into()),
+        .unwrap_or_else(|_| "elsrv=debug,tower_http=debug".into()),
         ))
     .with(tracing_subscriber::fmt::layer())
     .init();
 
-  let args: Vec<String> = env::args().collect();
-  let org_path = &args[1];
+  let config = Cfg::parse();
+  let org_path = config.org_path;
   let mut org_files: Vec<String> = vec![];
-  map_org_dir(org_path, &mut org_files)?;
+  map_org_dir(&org_path, &mut org_files)?;
   
   let mut print_files = String::new();
   for i in org_files.iter() {
     print_files.push_str(&format!("{}\n", i));
   }
-  let addr: SocketAddr = args[2].parse()?;
+  let addr: SocketAddr = config.elsrv_addr.parse()?;
   println!("listening on {}", addr);
-  println!("/org -- {}", &org_path);
+  println!("/org -- {}", &org_path.display());
   println!("/auth/discord");
   println!("/logout\n\n");
   println!("org files found:");
   println!("{}", &print_files);
-  let oauth_client = discord_oauth_client();
-  let store = MemoryStore::new();
+  let oauth_client = discord_oauth_client(
+    &config.discord_client_id,
+    &config.discord_client_secret,
+    Some(&config.discord_redirect_url),
+    Some(&config.discord_auth_url),
+    Some(&config.discord_token_url)
+  );
+  let oauth_store = MemoryStore::new();
   let mut app = Router::new()
     .route("/", get(index))
-    .route("/org", get(|| async {print_files}))
+    .route("/org", get(|user: Option<User>| async
+		       {
+			 match user {
+			   Some(u) => print_files,
+			   None => UNAUTH_DEFAULT.to_string(),
+			 }
+		       }
+    ))
 //    .fallback(get_service(ServeDir::new(org_path)).handle_error(handle_io_error))
     .route("/auth/discord", get(discord_auth))
     .route("/auth/authorized", get(login_authorized))
     .route("/logout", get(logout))
     .layer(TraceLayer::new_for_http())
-    .layer(Extension(store))
+    .layer(Extension(oauth_store))
     .layer(Extension(oauth_client));  
 
   for i in org_files.iter() {
-    app = app.route(&format!("/org/{}",i.strip_prefix("../").unwrap()), get_service(ServeFile::new(i)).handle_error(handle_io_error));
+    app = app.route(&format!("{}",i.strip_prefix("../").unwrap()), get_service(ServeFile::new(i)).handle_error(handle_io_error));
   }
   axum::Server::bind(&addr)
     .serve(app.into_make_service())
@@ -148,7 +165,7 @@ async fn handle_io_error(_err: io::Error) -> impl IntoResponse {
     (StatusCode::INTERNAL_SERVER_ERROR, "Something went wrong...")
 }
 
-fn discord_oauth_client() -> BasicClient {
+fn discord_oauth_client(client_id: &str, client_secret: &str, redirect_url: Option<&str>, auth_url: Option<&str>, token_url: Option<&str>) -> BasicClient {
     // Environment variables (* = required):
     // *"CLIENT_ID"     "REPLACE_ME";
     // *"CLIENT_SECRET" "REPLACE_ME";
@@ -156,21 +173,18 @@ fn discord_oauth_client() -> BasicClient {
     //  "AUTH_URL"      "https://discord.com/api/oauth2/authorize?response_type=code";
     //  "TOKEN_URL"     "https://discord.com/api/oauth2/token";
 
-    let client_id = env::var("CLIENT_ID").expect("Missing CLIENT_ID!");
-    let client_secret = env::var("CLIENT_SECRET").expect("Missing CLIENT_SECRET!");
-    let redirect_url = env::var("REDIRECT_URL")
-        .unwrap_or_else(|_| "http://127.0.0.1:3000/auth/authorized".to_string());
+  let redirect_url = redirect_url
+    .unwrap_or_else(|| {"http://127.0.0.1:3000/auth/authorized"}).to_string();
 
-    let auth_url = env::var("AUTH_URL").unwrap_or_else(|_| {
-        "https://discord.com/api/oauth2/authorize?response_type=code".to_string()
-    });
+  let auth_url = auth_url
+    .unwrap_or_else(|| {"https://discord.com/api/oauth2/authorize?response_type=code"}).to_string();
 
-    let token_url = env::var("TOKEN_URL")
-        .unwrap_or_else(|_| "https://discord.com/api/oauth2/token".to_string());
+    let token_url = token_url
+    .unwrap_or_else(|| "https://discord.com/api/oauth2/token").to_string();
 
     BasicClient::new(
-        ClientId::new(client_id),
-        Some(ClientSecret::new(client_secret)),
+        ClientId::new(client_id.to_string()),
+        Some(ClientSecret::new(client_secret.to_string())),
         AuthUrl::new(auth_url).unwrap(),
         Some(TokenUrl::new(token_url).unwrap()),
     )
@@ -190,13 +204,13 @@ struct User {
 // Session is optional
 async fn index(user: Option<User>) -> impl IntoResponse {
     match user {
-        Some(u) => format!(
-          "operator: {:?}
+      Some(u) => format!(
+        "operator: {:?}
 /el -- execute elisp
 /org -- view org files",
-          u,
-        ),
-        None => "visit `/auth/discord` to begin.".to_string(),
+        u,
+      ),
+      None => UNAUTH_DEFAULT.to_string(),
     }
 }
 
@@ -224,6 +238,18 @@ async fn logout(
     Redirect::to(RWEST_IO)
 }
 
+//  TODO 2022-07-29: implement org handler
+//    - this requires that the file list is available in a store so that
+//      it can be accessed
+//    - requires auth (can make a macro for this condition)
+//    - make sure all files are unaccessible without auth
+async fn org_index(
+  user: Option<User>) -> impl IntoResponse {
+  match user {
+    Some(_) => "".to_string(),
+    None => UNAUTH_DEFAULT.to_string(),
+  }
+}
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
 struct AuthRequest {

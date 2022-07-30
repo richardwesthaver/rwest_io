@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+clap = { version = "3.2.15", features = ["derive", "env"] }
 async-session = "3.0.0"
 axum = { version = "0.5.13", features = ["headers"] }
 axum-extra = { version = "0.3.6", features = ["spa"] }
@@ -21,3 +22,10 @@ tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
 anyhow = "1.0.58"
 mime = "0.3.16"
 tower = "0.4.13"
+
+[[bin]]
+name = "elsrv"
+path = "src/main.rs"
+
+[lib]
+path = "src/lib.rs"
