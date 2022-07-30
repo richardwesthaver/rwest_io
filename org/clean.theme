@@ -1,7 +1,9 @@
 ; -*- mode: org -*-
 #+OPTIONS: org-html-head-include-default-style:nil
-#+HTML_HEAD:  <style type="text/css">
 
+#+HTML_HEAD: <link rel="icon" type="image/png" href="https://rwest.io/style/favicon.ico">
+
+#+HTML_HEAD:  <style type="text/css">
 #+HTML_HEAD: 
 #+HTML_HEAD: * {
 #+HTML_HEAD:     -webkit-box-sizing:  border-box;
@@ -144,6 +146,7 @@
 #+HTML_HEAD: }
 #+HTML_HEAD: a: hover {
 #+HTML_HEAD:     text-decoration:  underline;
+#+HTML_HEAD:     color: #765779;
 #+HTML_HEAD: }
 #+HTML_HEAD: table {
 #+HTML_HEAD:     line-height:  2.5;

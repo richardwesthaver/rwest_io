@@ -1,0 +1,9 @@
+#+TITLE: rwest_io
+#+DATE: 2022-07-29 Thu
+#+OPTIONS: ^:nil
+#+FILETAGS: :web:wasm:rust:
+#+SETUPFILE: ../clean.theme
++ source code: [[https://hg.rwest.io/rwest_io]]
+  - [[https://github.com/richardwesthaver/rwest_io][github mirror]]
+
+#+INCLUDE: "../../readme.org" :lines "7-"

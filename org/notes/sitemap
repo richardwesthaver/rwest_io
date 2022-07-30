@@ -1,8 +1,20 @@
 #+TITLE: notes
 
-- [{{{filedate(~/dev/rwest_io/org/notes/comp_rand.org)}}}] [[file:comp_rand.org][Random Computer Rambles]] {{{filetags(~/dev/rwest_io/org/notes/comp_rand.org)}}}
-- [{{{filedate(~/dev/rwest_io/org/notes/drum_chops.org)}}}] [[file:drum_chops.org][Drum Chops]] {{{filetags(~/dev/rwest_io/org/notes/drum_chops.org)}}}
-- [{{{filedate(~/dev/rwest_io/org/notes/mercurial.org)}}}] [[file:mercurial.org][Mercurial]] {{{filetags(~/dev/rwest_io/org/notes/mercurial.org)}}}
-- [{{{filedate(~/dev/rwest_io/org/notes/progressive_web_apps.org)}}}] [[file:progressive_web_apps.org][Progressive Web Apps]] {{{filetags(~/dev/rwest_io/org/notes/progressive_web_apps.org)}}}
-- [{{{filedate(~/dev/rwest_io/org/notes/knowledge_and_information.org)}}}] [[file:knowledge_and_information.org][Knowledge and Information]] {{{filetags(~/dev/rwest_io/org/notes/knowledge_and_information.org)}}}
-- [{{{filedate(~/dev/rwest_io/org/notes/installing_emacs.org)}}}] [[file:installing_emacs.org][Installing Emacs]] {{{filetags(~/dev/rwest_io/org/notes/installing_emacs.org)}}}
+- [[file:/Users/ellis/dev/rwest_io/org/notes/comp_rand.org][comp_rand.org]]
+  - {{{filedate(Random Computer Rambles)}}}
+  - {{{filetags(/Users/ellis/dev/rwest_io/org/notes/comp_rand.org)}}}
+- [[file:/Users/ellis/dev/rwest_io/org/notes/drum_chops.org][drum_chops.org]]
+  - {{{filedate(Drum Chops)}}}
+  - {{{filetags(/Users/ellis/dev/rwest_io/org/notes/drum_chops.org)}}}
+- [[file:/Users/ellis/dev/rwest_io/org/notes/mercurial.org][mercurial.org]]
+  - {{{filedate(Mercurial)}}}
+  - {{{filetags(/Users/ellis/dev/rwest_io/org/notes/mercurial.org)}}}
+- [[file:/Users/ellis/dev/rwest_io/org/notes/progressive_web_apps.org][progressive_web_apps.org]]
+  - {{{filedate(Progressive Web Apps)}}}
+  - {{{filetags(/Users/ellis/dev/rwest_io/org/notes/progressive_web_apps.org)}}}
+- [[file:/Users/ellis/dev/rwest_io/org/notes/knowledge_and_information.org][knowledge_and_information.org]]
+  - {{{filedate(Knowledge and Information)}}}
+  - {{{filetags(/Users/ellis/dev/rwest_io/org/notes/knowledge_and_information.org)}}}
+- [[file:/Users/ellis/dev/rwest_io/org/notes/installing_emacs.org][installing_emacs.org]]
+  - {{{filedate(Installing Emacs)}}}
+  - {{{filetags(/Users/ellis/dev/rwest_io/org/notes/installing_emacs.org)}}}

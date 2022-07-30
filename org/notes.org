@@ -1,5 +1,5 @@
 #+TITLE: notes
-#+DATE: 2021-06-20
+#+DATE: 2021-06-20 Sun
 #+SETUPFILE: clean.theme
 #+OPTIONS: ^:nil p:t
 #+HTML: <div class="notes-entries">
