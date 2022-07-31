@@ -3,5 +3,5 @@
 #+SETUPFILE: clean.theme
 #+OPTIONS: ^:nil p:t
 #+HTML: <div class="notes-entries">
-#+INCLUDE: "notes/sitemap" :lines "3-"
+#+INCLUDE: "notes/sitemap.org" :lines "3-"
 #+HTML: </div>

@@ -38,14 +38,26 @@ URL `https://rwest.io'")
 ;;;; custom
 ;; 
 ;; change me!
-
-(defcustom rwest-io-project-dir (expand-file-name "~/dev/rwest_io/")
+(defcustom rwest-io-project-dir "~/dev/rwest_io"
   "location of `rwest-io' project source code"
   :type 'directory)
 
-(defcustom rwest-io-publish-dir "/sshx:hyde:/var/www/rwest.io/"
+(defcustom rwest-io-publish-dir "/sshx:hyde:/var/www/rwest.io"
   "publish `rwest-io' files to this directory"
   :type 'directory)
+
+;;; local
+
+(defmacro rw-path (path)
+  "concat PATH on `rwest-io-project-dir'"
+  (concat rwest-io-project-dir path))
+
+(defmacro rw-pub-path (path)
+  "concat PATH on `rwest-io-publish-dir'"
+  (concat rwest-io-publish-dir path))
+
+;; local dependencies
+(require 'elsrv (rw-path "elsrv/elsrv.el"))
 
 ;; publish config
 (setq org-html-style-default ""
@@ -72,47 +84,47 @@ URL `https://rwest.io'")
 	("blog"
 	 :base-directory "org/blog"
 	 :base-extension "org"
-	 :publishing-directory ,(concat rwest-io-publish-dir "blog")
+	 :publishing-directory ,(concat rwest-io-publish-dir "/blog")
 	 :org-publish-use-timestamps-flag nil
 	 :publishing-function org-html-publish-to-html
 	 :htmlized-source t
 	 :auto-sitemap t
 	 :html-preamble "<nav><a href = \"../\">home</a></nav>"
 	 :sitemap-title "blog"
-	 :sitemap-filename "sitemap"
+	 :sitemap-filename "sitemap.org"
 	 :sitemap-sort-files anti-chronologically
 	 :sitemap-format-entry org-sitemap-entry-format)
 	("notes"
 	 :base-directory "org/notes"
 	 :base-extension "org"
-	 :publishing-directory ,(concat rwest-io-publish-dir "notes")
+	 :publishing-directory ,(concat rwest-io-publish-dir "/notes")
 	 :org-publish-use-timestamps-flag nil
 	 :publishing-function org-html-publish-to-html
 	 :htmlized-source t
 	 :auto-sitemap t
 	 :html-preamble "<nav><a href = \"../\">home</a> | <a</nav>"
 	 :sitemap-title "notes"
-	 :sitemap-filename "sitemap"
+	 :sitemap-filename "sitemap.org"
 	 :sitemap-sort-files anti-chronologically
 	 :sitemap-format-entry org-sitemap-entry-format)
 	("projects"
 	 :base-directory "org/projects"
 	 :base-extension "org"
-	 :publishing-directory ,(concat rwest-io-publish-dir "projects")
+	 :publishing-directory ,(concat rwest-io-publish-dir "/projects")
 	 :org-publish-use-timestamps-flag nil
 	 :publishing-function org-html-publish-to-html
 	 :htmlized-source t
 	 :auto-sitemap t
 	 :html-preamble "<nav><a href = \"../\">home</a></nav>"
 	 :sitemap-title "projects"
-	 :sitemap-filename "sitemap"
+	 :sitemap-filename "sitemap.org"
 	 :sitemap-sort-files anti-chronologically
 	 :sitemap-format-entry org-sitemap-entry-format)
 	("media"
 	 :base-directory "org/media"
 	 :base-extension "css\\|txt\\|jpg\\|jpeg\\|gif\\|png\\|mp3\\|wav\\|flac\\|ogg\\|mp4"
 	 :recursive t
-	 :publishing-directory ,(concat rwest-io-publish-dir "media")
+	 :publishing-directory ,(concat rwest-io-publish-dir "/media")
 	 :publishing-function org-publish-attachment)
 	("static"
 	 :base-directory "static"
@@ -120,22 +132,10 @@ URL `https://rwest.io'")
 	 :recursive t
 	 :publishing-directory ,rwest-io-publish-dir
 	 :publishing-function org-publish-attachment)
-	("rwest.io" :components ("content" "blog" "notes" "projects" "media" "static"))))
-
-;;; local macros
-(defmacro rw-path (path)
-  (concat rwest-io-project-dir path))
-(defmacro rw-pub-path (path)
-  (concat rwest-io-publish-dir path))
-
-;;; local dependencies
-(require 'elsrv (rw-path "elsrv/elsrv.el"))
+	;; be aware, the ordering of components matters..
+	("rwest.io" :components ("media" "blog" "notes" "projects" "content" "static"))))
 
 ;;; org-id utils
-
-;; use CUSTOM_ID for links
-(with-eval-after-load buffer-file-name
-  (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id))
 
 (defun org-custom-id-get (&optional pom create prefix)
   "Get the CUSTOM_ID property of the entry at point-or-marker POM.
@@ -145,8 +145,10 @@ URL `https://rwest.io'")
    already. PREFIX will be passed through to `org-id-new'. In any
    case, the CUSTOM_ID of the entry is returned."
   (interactive)
-  (org-with-point-at pom
-    (let ((id (org-entry-get nil "CUSTOM_ID")))
+(org-with-point-at pom
+  (let ((id (org-entry-get nil "CUSTOM_ID"))
+	;; use CUSTOM_ID for links
+	(org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id))
       (cond
        ((and id (stringp id) (string-match "\\S-" id))
         id)
@@ -166,30 +168,31 @@ URL `https://rwest.io'")
 
 ;; define some org macros for sitemap generation
 (setq org-export-global-macros
-      '(("filetags" . "(eval (with-temp-buffer (find-file $1) (org-mode) (car (cdar (org-collect-keywords `(\"FILETAGS\"))))))")
-	("filedate" . "(eval (with-temp-buffer (find-file $1) (org-mode) (car (cdar (org-collect-keywords `(\"DATE\"))))))")
-	("include" . "#+INCLUDE: $1 :lines $2")))
+      '(("filetags" . "(eval (with-temp-buffer (find-file $1) (car (cdar (org-collect-keywords `(\"FILETAGS\"))))))")
+	("filedate" . "(eval (with-temp-buffer (find-file $1) (car (cdar (org-collect-keywords `(\"DATE\"))))))")))
+
+(defmacro rw-plist-get (project entry)
+  )
 
 (defun org-sitemap-entry-format (entry style project)
   "Format ENTRY in org-publish PROJECT Sitemap format that includes
 date and tags."
-  (let* ((filename (org-publish-find-title entry project)))
-    (message (format "%s" entry))
-    (message (format "%s" project))
+  (let ((filename (org-publish-find-title entry project))
+	 (date (org-publish-find-date entry project)))
     (if (= (length filename) 0)
         (format "*%s*" entry)
-      (format "[[file:%s][%s]]
-  - {{{filedate(%s)}}}
-  - {{{filetags(%s)}}}"
-	      (format "%s%s/%s" rwest-io-project-dir (plist-get (cdr project) :base-directory) entry)
+      (format "[{{{filedate(%s)}}}] [[file:%s][%s]] {{{filetags(%s)}}}"
+              (format "%s/%s/%s" rwest-io-project-dir (plist-get (cdr project) :base-directory) entry)
               entry
               filename
-	      (format "%s%s/%s" rwest-io-project-dir (plist-get (cdr project) :base-directory) entry)
-	      ))))
-
+              (format "%s/%s/%s" rwest-io-project-dir (plist-get (cdr project) :base-directory) entry)
+              ))))
 ;;; postamble
+
 (setq org-html-postamble "<footer><div><p>created %d;<br>updated %C;</p></div></footer>")
+
 ;;; commands
+
 ;;;###autoload
 (defun rwest-io-publish ()
   "publish `rwest-io' content"
