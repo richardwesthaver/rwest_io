@@ -44,13 +44,25 @@ URL `https://rwest.io'")
 
 (defcustom rwest-io-publish-dir "/sshx:hyde:/var/www/rwest.io"
   "publish `rwest-io' files to this directory"
-  :type 'directory)
+  :type 'directory
+  :group 'rwest-io)
+
+(defcustom rwest-io-sitemap-entry-format 'org-sitemap-entry-format
+  "function to be used for sitemap entries. must accept 3 params:
+entry style and project"
+  :group 'rwest-io
+  :type 'function)
+
+(defcustom rwest-io-theme-path (concat rwest-io-project-dir "/org/clean.theme")
+  "path to the SETUPFILE that will be used"
+  :type 'file
+  :group 'rwest-io)
 
 ;;; local
 
 (defmacro rw-path (path)
   "concat PATH on `rwest-io-project-dir'"
-  (concat rwest-io-project-dir path))
+  (concat rwest-io-project-dir "/" path))
 
 (defmacro rw-pub-path (path)
   "concat PATH on `rwest-io-publish-dir'"
@@ -93,7 +105,7 @@ URL `https://rwest.io'")
 	 :sitemap-title "blog"
 	 :sitemap-filename "sitemap.org"
 	 :sitemap-sort-files anti-chronologically
-	 :sitemap-format-entry org-sitemap-entry-format)
+	 :sitemap-format-entry ,rwest-io-sitemap-entry-format)
 	("notes"
 	 :base-directory "org/notes"
 	 :base-extension "org"
@@ -106,7 +118,7 @@ URL `https://rwest.io'")
 	 :sitemap-title "notes"
 	 :sitemap-filename "sitemap.org"
 	 :sitemap-sort-files anti-chronologically
-	 :sitemap-format-entry org-sitemap-entry-format)
+	 :sitemap-format-entry ,rwest-io-sitemap-entry-format)
 	("projects"
 	 :base-directory "org/projects"
 	 :base-extension "org"
@@ -119,7 +131,7 @@ URL `https://rwest.io'")
 	 :sitemap-title "projects"
 	 :sitemap-filename "sitemap.org"
 	 :sitemap-sort-files anti-chronologically
-	 :sitemap-format-entry org-sitemap-entry-format)
+	 :sitemap-format-entry ,rwest-io-sitemap-entry-format)
 	("media"
 	 :base-directory "org/media"
 	 :base-extension "css\\|txt\\|jpg\\|jpeg\\|gif\\|png\\|mp3\\|wav\\|flac\\|ogg\\|mp4"
@@ -133,7 +145,8 @@ URL `https://rwest.io'")
 	 :publishing-directory ,rwest-io-publish-dir
 	 :publishing-function org-publish-attachment)
 	;; be aware, the ordering of components matters..
-	("rwest.io" :components ("media" "blog" "notes" "projects" "content" "static"))))
+	("rwest.io" :components ("media" "blog" "notes" "projects" "content" "static"))
+	("rwest.io-no-static" :components ( "blog" "notes" "projects" "content"))))
 
 ;;; org-id utils
 
@@ -171,21 +184,23 @@ URL `https://rwest.io'")
       '(("filetags" . "(eval (with-temp-buffer (find-file $1) (car (cdar (org-collect-keywords `(\"FILETAGS\"))))))")
 	("filedate" . "(eval (with-temp-buffer (find-file $1) (car (cdar (org-collect-keywords `(\"DATE\"))))))")))
 
-(defmacro rw-plist-get (project entry)
-  )
-
 (defun org-sitemap-entry-format (entry style project)
   "Format ENTRY in org-publish PROJECT Sitemap format that includes
 date and tags."
-  (let ((filename (org-publish-find-title entry project))
-	 (date (org-publish-find-date entry project)))
-    (if (= (length filename) 0)
+  (let ((title (org-publish-find-title entry project))
+	(date (org-publish-find-date entry project))
+	(path (format "%s/%s/%s"
+		      rwest-io-project-dir
+		      (plist-get (cdr project)
+				 :base-directory)
+		      entry)))
+    (if (= (length title) 0)
         (format "*%s*" entry)
-      (format "[{{{filedate(%s)}}}] [[file:%s][%s]] {{{filetags(%s)}}}"
-              (format "%s/%s/%s" rwest-io-project-dir (plist-get (cdr project) :base-directory) entry)
+      (format "{{{filedate(%s)}}} [[file:%s][%s]] {{{filetags(%s)}}}"
+	      path
               entry
-              filename
-              (format "%s/%s/%s" rwest-io-project-dir (plist-get (cdr project) :base-directory) entry)
+              title
+	      path
               ))))
 ;;; postamble
 
@@ -194,12 +209,20 @@ date and tags."
 ;;; commands
 
 ;;;###autoload
-(defun rwest-io-publish ()
-  "publish `rwest-io' content"
+(defun rwest-io-publish (&optional no-static new-sitemap force)
+  "publish `rwest-io' content.
+If NO-STATIC is t, skip media and static files.
+If NEW-SITEMAP is t, generate new sitemap.org files.
+If FORCE is t, skip checking file mod date and just publish all files."
   (interactive)
-  (let ((default-directory rwest-io-project-dir))
-    (message (format "publishing from %s" default-directory))
-    (org-publish "rwest.io" t)))
+  (let ((default-directory rwest-io-project-dir)
+	(prj-name (if (and no-static (not new-sitemap))
+		      (org-publish "rwest.io-no-static")
+		    (if (and new-sitemap (not no-static))
+			(org-publish "rwest.io-new-sitemap"))
+		    (org-publish "rwest.io" t))))
+    (message (format "publishing from %s" default-directory))    
+    (org-publish prj-name force)))
 
 (provide 'rwest-io)
 ;;; rwest-io.el ends here

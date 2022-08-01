@@ -1,5 +1,5 @@
 #+TITLE: blog
 
-- [{{{filedate(~/dev/rwest_io/org/blog/octatrack_set_prep.org)}}}] [[file:octatrack_set_prep.org][Octatrack Set Prep]] {{{filetags(~/dev/rwest_io/org/blog/octatrack_set_prep.org)}}}
-- [{{{filedate(~/dev/rwest_io/org/blog/rock_and_roll.org)}}}] [[file:rock_and_roll.org][Rock & Roll]] {{{filetags(~/dev/rwest_io/org/blog/rock_and_roll.org)}}}
-- [{{{filedate(~/dev/rwest_io/org/blog/playing_with_nws.org)}}}] [[file:playing_with_nws.org][Playing with NWS]] {{{filetags(~/dev/rwest_io/org/blog/playing_with_nws.org)}}}
+- {{{filedate(~/dev/rwest_io/org/blog/octatrack_set_prep.org)}}} [[file:octatrack_set_prep.org][Octatrack Set Prep]] {{{filetags(~/dev/rwest_io/org/blog/octatrack_set_prep.org)}}}
+- {{{filedate(~/dev/rwest_io/org/blog/rock_and_roll.org)}}} [[file:rock_and_roll.org][Rock & Roll]] {{{filetags(~/dev/rwest_io/org/blog/rock_and_roll.org)}}}
+- {{{filedate(~/dev/rwest_io/org/blog/playing_with_nws.org)}}} [[file:playing_with_nws.org][Playing with NWS]] {{{filetags(~/dev/rwest_io/org/blog/playing_with_nws.org)}}}
