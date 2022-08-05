@@ -1,0 +1,34 @@
+[package]
+name = "auth"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "authsrv"
+path = "src/main.rs"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+proto = { path = "../proto" }
+clap = { version = "3.2.15", features = ["derive", "env"] }
+axum = { version = "0.5.13", features = ["headers"] }
+tower-http = { version = "0.3.0", features = ["fs", "trace"] }
+serde = { version = "1.0.140", features = ["derive"] }
+sqlx = { version = "0.6.0", features = ["runtime-tokio-rustls", "any", "uuid", "chrono", "macros", "postgres"] }
+tokio = { version = "1.20.1", features = ["rt", "rt-multi-thread", "time", "net", "macros"] }
+tracing = "0.1.35"
+tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
+tower = "0.4.13"
+thiserror = "1.0.31"
+anyhow = "1.0.58"
+
+[profile.release]
+opt-level = "z"
+lto = true
+panic = "abort"
+codegen-units = 1
+
+[profile.dev.package.sqlx-macros]
+opt-level = 3

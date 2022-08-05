@@ -279,7 +279,6 @@ $ emacsclient -c
 
 (define-key special-event-map [sigusr1] 'elsrv-restart)
 
-
 ;;;; provide
 (provide 'elsrv)
 ;;; elsrv.el ends here

@@ -19,9 +19,8 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
-;; 
-
+;; This is the source code for building the static content of my
+;; website: <https://rwest.io>.
 ;;; Code:
 (require 'ox-publish)
 (require 'org-id)
@@ -35,7 +34,7 @@
   "Customization group for rwest_io Emacs apps
 URL `https://rwest.io'")
 
-;;;; custom
+;;; custom
 ;; 
 ;; change me!
 (defcustom rwest-io-project-dir "~/dev/rwest_io"
@@ -69,7 +68,7 @@ entry style and project"
   (concat rwest-io-publish-dir path))
 
 ;; local dependencies
-(require 'elsrv (rw-path "elsrv/elsrv.el"))
+(require 'elsrv (rw-path "el/elsrv.el"))
 
 ;; publish config
 (setq org-html-style-default ""
@@ -145,8 +144,8 @@ entry style and project"
 	 :publishing-directory ,rwest-io-publish-dir
 	 :publishing-function org-publish-attachment)
 	;; be aware, the ordering of components matters..
-	("rwest.io" :components ("media" "blog" "notes" "projects" "content" "static"))
-	("rwest.io-no-static" :components ( "blog" "notes" "projects" "content"))))
+	("rwest.io" :components ("blog" "notes" "projects" "content" "static"))
+	("rwest.io-with-static" :components ( "blog" "notes" "projects" "content" "static" "media"))))
 
 ;;; org-id utils
 
@@ -209,21 +208,20 @@ date and tags."
 ;;; commands
 
 ;;;###autoload
-(defun rwest-io-publish (&optional no-static new-sitemap force)
+(defun rwest-io-publish (&optional static sitemap force)
   "publish `rwest-io' content.
-If NO-STATIC is t, skip media and static files.
-If NEW-SITEMAP is t, generate new sitemap.org files.
+If STATIC is t, also publish media and static files.
+If SITEMAP is t, also generate new sitemap.org files.
 If FORCE is t, skip checking file mod date and just publish all files."
   (interactive)
   (let ((default-directory rwest-io-project-dir)
-	(prj-name (if (and no-static (not new-sitemap))
-		      (org-publish "rwest.io-no-static")
-		    (if (and new-sitemap (not no-static))
-			(org-publish "rwest.io-new-sitemap"))
-		    (org-publish "rwest.io" t))))
+	(prj-name (if (and static (not sitemap))
+		      "rwest.io-with-static"
+		    (if (and sitemap (not static))
+			"rwest.io-with-sitemap")
+		    "rwest.io")))
     (message (format "publishing from %s" default-directory))    
     (org-publish prj-name force)))
 
 (provide 'rwest-io)
 ;;; rwest-io.el ends here
-

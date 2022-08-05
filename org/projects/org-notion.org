@@ -2,6 +2,7 @@
 #+DATE: 2022-01-24 Mon
 #+DESCRIPTION: Notion.so Org-mode Extension
 #+FILETAGS: :emacs:org:elisp:
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
 #+SETUPFILE: ../clean.theme
 + source code: [[https://hg.rwest.io/org-notion]]
   - [[https://github.com/richardwesthaver/org-notion][github mirror]]

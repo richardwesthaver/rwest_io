@@ -9,7 +9,7 @@ pub struct Cfg {
   pub elsrv_addr: String,
   /// host address of postgres DB
   #[clap(long, env)]
-  pub db_addr: String,
+  pub database_url: String,
   /// oauth client_id
   #[clap(long, env)]
   pub discord_client_id: String,
@@ -17,7 +17,7 @@ pub struct Cfg {
   #[clap(long, env)]
   pub discord_client_secret: String,
   /// oauth redirect_url
-  #[clap(long, env, default_value="https://127.0.0.1:3000/auth/authorized")]
+  #[clap(long, env, default_value="https://127.0.0.1:8000/auth/authorized")]
   pub discord_redirect_url: String,
   /// oauth auth_url
   #[clap(long, env, default_value="https://discord.com/api/oauth2/authorize?response_type=code")]

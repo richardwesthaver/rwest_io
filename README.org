@@ -7,68 +7,87 @@
 This project contains the source code for my personal website,
 [[https://rwest.io][rwest.io]].
 
-* Development
-=wasm-pack= is required to build the frontend.
-#+begin_src shell
-cargo install wasm-pack
-#+end_src
+* Overview
+My site consists of a few modules hosted by [[https://www.nginx.com/][Nginx]] (=*= denotes
+authentication required):
 
-The =build.sh= and =serve.sh= scripts are used for compiling and
-serving the app. The port used can be changed from the default (3030)
-using an env variable:
-#+begin_src shell
-PORT=8080 ./serve.sh
-#+end_src
+- org :: static html pages
+  - generated with [[https://orgmode.org/][Org-mode]]
+  - =/= =/blog= =/notes= =/projects= 
+- auth :: auth server
+  - OAuth2 service
+  - supports discord, google, and github
+  - =/login= =/auth= =/logout=
+- el :: elsrv *
+  - HTTP<->UDP proxy to [[https://www.emacswiki.org/emacs/EmacsLisp][Emacs Lisp]] shell
+  - =/el=
+- status :: status server
+  - =/status=
 
-* COMMENT tasks
-** DONE explore sauron
-- State "DONE"       from "RESEARCH"   [2022-07-25 Mon 02:48]
-[[https://github.com/ivanceras/sauron][sauron/ - github]]
-- build a frontend app
-- serve it
+These are the frontend components. We also have a few backend
+components, most notably a Postgres DB service and a running Emacs
+session.
 
-** RESEARCH design
-- State "TODO"       from              [2022-07-25 Mon 02:58]
-:notes:
-- bare-bones index
-:end:
-*** TODO index
-- State "TODO"       from              [2022-07-25 Mon 03:01]
-*** TODO define types and API
-- build out =common=
-
-** TODO implement API
-- client app.rs
-- server fn calls
-- messages and handlers
-- MVC
-
-** TODO MVP
-* sketch
 #+begin_src artist
-                   KEY          VAL              
-               +---------+                        
-               | /blog   |  /  {UUID}  + 	       
-               |         |              \           
-  +--------+   |         |               \          
-  |rwest.io|   |         |                \         
-  +--------+   | /notes  |  /  {UUID} -----\      
-    \          |         |                  -       
-     \         |         |                   \      
-      \        |         |                    -  =++     +----+   
-       +------ | /media  |  /  {TYPE}  ---------+== ++ ++|HYDE| 
-               |         |                     / ==  ++  +----+  
-               |         |                    /     	     
-               |         |                   /      	     
-               | /data   |  /  {TYPE} ------+		     
-               |         |                 / 
-               |         |                /  
-               |         |               /          
-               | /status |  /  (ID) ----+
-               |         |	         / 
-               | /x      |  /  (TYPE) +
-               +---------+            
-#+end_src
+                                      ORG    = static html pages
+                                      AUTH   = auth server  
+                                      EL     = elsrv proxy     	 
+                                      STATUS = status server 
 
+
+
+
+  +----------+		      		       		
+  |          |		      		       		
+  |          |  	      			       		
+  |          |  +----------------+               	      	
+  |          |  |                |   +----------------+	
+  |          |  |    ORG         |   |                |	
+  |          |  |                |   |                |  	
+  |          |  +----------------+   |   	   DB       |
+  |          |  |                |   |                |
+  |          |  |    AUTH        |   |                |
+  |  NGINX   |  |                |   +----------------+
+  |          |  +----------------+               	      
+  |          |  |                |   +----------------+
+  |          |  |    EL          |   |                |
+  |          |  |                |   |                |
+  |          |  +----------------+   |     EMACS      |
+  |          |  |                |   |                |
+  |          |  |    STATUS      |   |                |
+  |          |  |                |   +----------------+
+  |          |  +----------------+          
+  |          |
+  |          |
+  |          |
+  +----------+
+#+end_src
+** Modules
+- there are two types of modules worth mentioning here: static
+  (org) and dynamic (auth el status).
+  - *Static* modules do not interact with the backend and are just
+    'compiled' files which can then be served by any web server.
+  - *Dynamic* modules are applications which send and receive
+    information on specified sockets. They interact with backend
+    components and need too be reverse proxied when used in a web
+    server like Nginx.
+    - binaries shipped with dynamic modules run as separate services.
+    - configured at runtime
+    - flexible routing - host each service across LAN/WAN
+*** org
+*** auth
+- authsrv
+*** el
+- elsrv
+- elsrv.el
+*** status
+- statsrv
 * resources
 - [[https://gitlab.com/OlMon/org-themes/-/tree/master/][org themes]]
+- [[https://www.postgresql.org/docs/current/index.html][postgres docs]]
+- [[http://nginx.org/en/docs/][nginx docs]]
+- [[https://github.com/tokio-rs/axum][axum]]
+- [[https://github.com/ryanpig/wasm_terminal_2048][wasm_terminal_2048]]
+- [[https://rustwasm.github.io/docs/book/][Rust and WebAssembly]]
+- [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Byte-Packing.html][elisp -- Byte Packing]]
+- [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Processes.html][elisp -- Processes]]

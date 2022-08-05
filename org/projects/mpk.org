@@ -1,6 +1,7 @@
 #+TITLE: mpk
 #+DATE: 2022-02-10 Thu
 #+FILETAGS: :media:music:rust:
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
 #+SETUPFILE: ../clean.theme
 + source code: [[https://hg.rwest.io/mpk]]
   - [[https://github.com/richardwesthaver/mpk][github mirror]]

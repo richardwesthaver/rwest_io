@@ -1,0 +1,39 @@
+* TODO repo link type
+- State "TODO"       from              [2022-08-02 Tue 16:48]
+- use custom link to dynamically export to hg.rwest.io or github.com
+  based on local var
+* RESEARCH oauth impls
+- google
+- github
+- design trait for oauth dance
+* TODO refactor
+- State "TODO"       from              [2022-08-02 Tue 16:34]
+- [X] move shared dependencies to proto crate
+- [ ] get modules auth/el in running state
+* DONE explore sauron
+- State "DONE"       from "RESEARCH"   [2022-07-25 Mon 02:48]
+[[https://github.com/ivanceras/sauron][sauron/ - github]]
+- build a frontend app
+- serve it
+
+* DONE design
+- State "DONE"       from "RESEARCH"   [2022-08-02 Tue 13:50]
+- State "TODO"       from              [2022-07-25 Mon 02:58]
+:notes:
+- bare-bones index
+:end:
+*** TODO index
+- State "TODO"       from              [2022-07-25 Mon 03:01]
+*** TODO define types and API
+- build out =common=
+
+* DONE implement API
+- State "DONE"       from "TODO"       [2022-08-02 Tue 13:50]
+- client app.rs
+- server fn calls
+- messages and handlers
+- MVC
+
+* DONE MVP
+- State "DONE"       from "TODO"       [2022-08-02 Tue 13:51]
+- / /auth /el

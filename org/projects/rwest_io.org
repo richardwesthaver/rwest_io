@@ -2,6 +2,7 @@
 #+DATE: 2022-07-29 Thu
 #+OPTIONS: ^:nil
 #+FILETAGS: :web:wasm:rust:
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
 #+SETUPFILE: ../clean.theme
 + source code: [[https://hg.rwest.io/rwest_io]]
   - [[https://github.com/richardwesthaver/rwest_io][github mirror]]

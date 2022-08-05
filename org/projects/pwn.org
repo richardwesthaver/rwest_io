@@ -2,6 +2,7 @@
 #+DATE: 2022-07-21 Thu
 #+DESCRIPTION: Pyscho War Network
 #+FILETAGS: :rust:asm:data:
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
 #+SETUPFILE: ../clean.theme
 + source code: [[https://hg.rwest.io/pwn]]
   - [[https://github.com/richardwesthaver/pwn][github mirror]]
