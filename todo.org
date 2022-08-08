@@ -1,15 +1,26 @@
-* TODO repo link type
+* TODO session token expiration                                          :el:
+- State "TODO"       from              [2022-08-07 Sun 22:29]
+- set an expiration and refresh rate in session cookie
+  - will mean that cookies need to be enabled in browser for app to work
+* RESEARCH elsrv frontend                                                :el:
+- [[https://github.com/wasmerio/webassembly.sh][webassembly.sh]]
+- use xterm.js as wrapper
+- implement in Rust wasm
+- websocket or http?
+* TODO repo link type                                                   :org:
 - State "TODO"       from              [2022-08-02 Tue 16:48]
 - use custom link to dynamically export to hg.rwest.io or github.com
   based on local var
-* RESEARCH oauth impls
+* RESEARCH oauth impls                                                 :auth:
+- design trait for oauth dance
 - google
 - github
-- design trait for oauth dance
-* TODO refactor
+- think about MFA impl
+* DONE refactor
+- State "DONE"       from "TODO"       [2022-08-07 Sun 22:27]
 - State "TODO"       from              [2022-08-02 Tue 16:34]
 - [X] move shared dependencies to proto crate
-- [ ] get modules auth/el in running state
+- [X] get modules auth/el in running state
 * DONE explore sauron
 - State "DONE"       from "RESEARCH"   [2022-07-25 Mon 02:48]
 [[https://github.com/ivanceras/sauron][sauron/ - github]]
