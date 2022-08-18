@@ -170,7 +170,7 @@ entry style and project"
         (org-id-add-location id (buffer-file-name (buffer-base-buffer)))
         id)))))
 
-(defun org-add-ids-to-headlines-in-file ()
+(defun org-id-add-to-headlines-in-file ()
   "Add CUSTOM_ID properties to all headlines in the
    current file which do not already have one."
   (interactive)

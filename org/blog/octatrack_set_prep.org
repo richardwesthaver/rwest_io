@@ -4,3 +4,58 @@
 #+OPTIONS: ^:nil
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
 #+SETUPFILE: ../clean.theme
+
+So,
+
+I've had a hankering to do some sort of solo live electronic music
+this year. I have too much gear. I should put it to use even if it's
+just for jamming in my basement.
+
+I have an [[https://www.elektron.se/us/octratrack-mkii-explorer][Octatrack]] which I'm starting to feel comfortable with, and
+have developed a lil' system for handling the tedious bits of
+preparing sets -- namely preparing, loading, and editing samples,
+loops, and songs for use in a performance.
+
+Let's take a single mp3 file for example. We'll call it ~dubstep.mp3~.
+
+I want to play ~dubstep.mp3~ in a live set, warped and on synced, with
+custom slices.
+
+To do this you need to:
+- load ~dubstep.mp3~ in Ableton
+- warp it
+- export it as wav 44.1khz
+- drop it onto the Octatrack
+- load it in a project
+- manually set slice points and the tempo
+- save it again
+
+Only then can you use ~dubstep.mp3~ in your performance.
+
+* a better way
+Clearly there must be a better way. There are some things we won't
+trust to machines, like having the final say on what the BPM of our
+tracks should be (warping), but really the perfect solution would be a
+mechanism that mirrors how the file is interpreted by Ableton in the
+Octatrack interpretation. We want a transpiler.
+
+Lucky for us, Ableton and Elektron use similar strategies for storing
+the sort of metadata we're after - binary files on disk. Nice! There
+is one problem though...
+... The binary formats are both proprietary.
+
+The OT format has luckily been reverse engineered and documented long
+ago -- I was able to write a parsing implementation for it in Rust and
+it works fine.
+
+The Ableton analysis file (.asd) format hasn't however, and is completely
+undocumented.
+
+As such, we can't really interop between the OT and Ableton in a
+seamless manner.
+
+** HACK parsing ASD
+** TODO ASD <==> OT
+- State "TODO"       from              [2022-08-14 Sun 20:55]
+** Other tools
+- ot chainer, wav encoder, get/set api
