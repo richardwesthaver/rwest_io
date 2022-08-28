@@ -1,5 +1,6 @@
+#+TITLE: mpk
 #+DATE: 2021-12-31
 #+FILETAGS: :media:music:rust:
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
 #+SETUPFILE: ../clean.theme
-#+INCLUDE: "~/dev/mpk/readme.org"
+#+INCLUDE: "~/dev/mpk/readme.org" :lines "2-"

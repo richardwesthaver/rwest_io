@@ -175,12 +175,17 @@ entry style and project"
 ;;; commands
 
 ;;;###autoload
-(defun rwest-io-publish (&optional static sitemap force)
+(defun rwest-io-publish (&optional sitemap static force)
   "publish `rwest-io' content.
-If STATIC is t, also publish media and static files.
 If SITEMAP is t, also generate new sitemap.org files.
-If FORCE is t, skip checking file mod date and just publish all files."
+If STATIC is t, also publish media and static files.
+If FORCE is t, skip checking file mod date and just publish all files.
+If given a prefix (C-u), set all args to t"
   (interactive)
+  (if current-prefix-arg
+      (setq sitemap t
+	    static t
+	    force t))
   (let ((default-directory rwest-io-project-dir)
 	(prj-name (if static "rwest.io-with-static"
 		    "rwest.io")))

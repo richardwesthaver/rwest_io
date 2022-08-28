@@ -94,7 +94,13 @@ session.
   - server health report
   - current weather for client IP
 * tasks
-** TODO sitemap generator
+** TODO break out auth server
+- State "TODO"       from              [2022-08-28 Sun 18:33]
+- logic is contained in elprox, need to move this to authsrv
+** DONE sitemap generator
+- Note taken on [2022-08-28 Sun 18:32] \\
+  see rwest-io-update-sitemap
+- State "DONE"       from "TODO"       [2022-08-28 Sun 18:32]
 - State "TODO"       from              [2022-08-27 Sat 21:13]
 - default generator isn't respecting our filedate macro
   - always uses the UPDATED file property

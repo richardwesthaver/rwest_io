@@ -1,6 +1,7 @@
+#+TITLE: rwest_io
 #+DATE: 2022-07-26
 #+OPTIONS: ^:nil
 #+FILETAGS: :web:wasm:rust:
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
 #+SETUPFILE: ../clean.theme
-#+INCLUDE: "../../readme.org"
+#+INCLUDE: "../../readme.org" :lines "2-"

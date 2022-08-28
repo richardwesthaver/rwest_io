@@ -1,3 +1,4 @@
+#+TITLE: pwn
 #+DATE: 2022-07-21
 #+FILETAGS: :rust:asm:data:
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">

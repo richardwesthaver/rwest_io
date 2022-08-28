@@ -1,5 +1,6 @@
+#+TITLE: org-notion
 #+DATE: 2021-12-20
 #+FILETAGS: :emacs:org:elisp:
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
 #+SETUPFILE: ../clean.theme
-#+INCLUDE: "~/dev/org-notion/readme.org"
+#+INCLUDE: "~/dev/org-notion/readme.org" :lines "2-"

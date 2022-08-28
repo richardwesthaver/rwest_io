@@ -1,5 +1,5 @@
 #+TITLE: projects
-- nil [[https://rwest.io/projects/mpk.html][2021-12-31]]
-- nil [[https://rwest.io/projects/pwn.html][2022-07-21]]
-- nil [[https://rwest.io/projects/rwest_io.html][2022-07-26]]
-- nil [[https://rwest.io/projects/org-notion.html][2021-12-20]]
+- 2022-07-26 [[https://rwest.io/projects/rwest_io.html][rwest_io]]
+- 2022-07-21 [[https://rwest.io/projects/pwn.html][pwn]]
+- 2021-12-31 [[https://rwest.io/projects/mpk.html][mpk]]
+- 2021-12-20 [[https://rwest.io/projects/org-notion.html][org-notion]]
