@@ -1,5 +1,5 @@
 #+TITLE: Installing Emacs
-#+DATE: 2022-07-26 Tue
+#+DATE: 2022-07-26
 #+FILETAGS: :cfg:emacs:
 #+OPTIONS: ^:nil num:nil toc:nil
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">

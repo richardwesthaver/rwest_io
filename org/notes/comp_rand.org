@@ -1,5 +1,5 @@
 #+TITLE: Random Computer Rambles
-#+DATE: 2020-10-24 Sat
+#+DATE: 2020-10-24
 #+FILETAGS: :dev:cs:sci:
 #+OPTIONS: ^:nil
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">

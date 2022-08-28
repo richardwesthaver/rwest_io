@@ -3,5 +3,5 @@
 #+OPTIONS: ^:nil p:t
 #+SETUPFILE: clean.theme
 #+HTML: <div class="blog-entries">
-#+INCLUDE: "blog/sitemap.org" :lines "3-"
+#+INCLUDE: "blog/sitemap.org" :lines "2-"
 #+HTML: </div>

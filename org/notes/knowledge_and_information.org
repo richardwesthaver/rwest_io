@@ -1,5 +1,5 @@
 #+TITLE: Knowledge and Information
-#+DATE: 2021-04-20 Tue
+#+DATE: 2021-04-20
 #+FILETAGS: :philosophy:ramble:
 #+OPTIONS: ^:nil num:nil toc:nil
 #+SETUPFILE: ../clean.theme

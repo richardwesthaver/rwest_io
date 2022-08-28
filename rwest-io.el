@@ -19,8 +19,10 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+
 ;; This is the source code for building the static content of my
 ;; website: <https://rwest.io>.
+
 ;;; Code:
 (require 'ox-publish)
 (require 'org-id)
@@ -55,6 +57,11 @@ entry style and project"
 (defcustom rwest-io-theme-path (concat rwest-io-project-dir "/org/clean.theme")
   "path to the SETUPFILE that will be used"
   :type 'file
+  :group 'rwest-io)
+
+(defcustom rwest-io-url "https://rwest.io"
+  "URL of my website"
+  :type 'url
   :group 'rwest-io)
 
 ;;; local
@@ -99,12 +106,7 @@ entry style and project"
 	 :org-publish-use-timestamps-flag nil
 	 :publishing-function org-html-publish-to-html
 	 :htmlized-source t
-	 :auto-sitemap t
-	 :html-preamble "<nav><a href = \"../\">home</a></nav>"
-	 :sitemap-title "blog"
-	 :sitemap-filename "sitemap.org"
-	 :sitemap-sort-files anti-chronologically
-	 :sitemap-format-entry ,rwest-io-sitemap-entry-format)
+	 :html-preamble "<nav><a href = \"../\">home</a></nav>")
 	("notes"
 	 :base-directory "org/notes"
 	 :base-extension "org"
@@ -112,12 +114,7 @@ entry style and project"
 	 :org-publish-use-timestamps-flag nil
 	 :publishing-function org-html-publish-to-html
 	 :htmlized-source t
-	 :auto-sitemap t
-	 :html-preamble "<nav><a href = \"../\">home</a> | <a</nav>"
-	 :sitemap-title "notes"
-	 :sitemap-filename "sitemap.org"
-	 :sitemap-sort-files anti-chronologically
-	 :sitemap-format-entry ,rwest-io-sitemap-entry-format)
+	 :html-preamble "<nav><a href = \"../\">home</a> | <a</nav>")
 	("projects"
 	 :base-directory "org/projects"
 	 :base-extension "org"
@@ -125,12 +122,7 @@ entry style and project"
 	 :org-publish-use-timestamps-flag nil
 	 :publishing-function org-html-publish-to-html
 	 :htmlized-source t
-	 :auto-sitemap t
-	 :html-preamble "<nav><a href = \"../\">home</a></nav>"
-	 :sitemap-title "projects"
-	 :sitemap-filename "sitemap.org"
-	 :sitemap-sort-files anti-chronologically
-	 :sitemap-format-entry ,rwest-io-sitemap-entry-format)
+	 :html-preamble "<nav><a href = \"../\">home</a></nav>")
 	("media"
 	 :base-directory "org/media"
 	 :base-extension "css\\|txt\\|jpg\\|jpeg\\|gif\\|png\\|mp3\\|wav\\|flac\\|ogg\\|mp4"
@@ -176,31 +168,6 @@ entry style and project"
   (interactive)
   (org-map-entries (lambda () (org-custom-id-get (point) 'create))))
 
-;;; sitemap utils
-
-;; define some org macros for sitemap generation
-(setq org-export-global-macros
-      '(("filetags" . "(eval (with-temp-buffer (find-file $1) (car (cdar (org-collect-keywords `(\"FILETAGS\"))))))")
-	("filedate" . "(eval (with-temp-buffer (find-file $1) (car (cdar (org-collect-keywords `(\"DATE\"))))))")))
-
-(defun org-sitemap-entry-format (entry style project)
-  "Format ENTRY in org-publish PROJECT Sitemap format that includes
-date and tags."
-  (let ((title (org-publish-find-title entry project))
-	(date (org-publish-find-date entry project))
-	(path (format "%s/%s/%s"
-		      rwest-io-project-dir
-		      (plist-get (cdr project)
-				 :base-directory)
-		      entry)))
-    (if (= (length title) 0)
-        (format "*%s*" entry)
-      (format "{{{filedate(%s)}}} [[file:%s][%s]] {{{filetags(%s)}}}"
-	      path
-              entry
-              title
-	      path
-              ))))
 ;;; postamble
 
 (setq org-html-postamble "<footer><div><p>created %d;<br>updated %C;</p></div></footer>")
@@ -215,13 +182,45 @@ If SITEMAP is t, also generate new sitemap.org files.
 If FORCE is t, skip checking file mod date and just publish all files."
   (interactive)
   (let ((default-directory rwest-io-project-dir)
-	(prj-name (if (and static (not sitemap))
-		      "rwest.io-with-static"
-		    (if (and sitemap (not static))
-			"rwest.io-with-sitemap")
+	(prj-name (if static "rwest.io-with-static"
 		    "rwest.io")))
     (message (format "publishing from %s" default-directory))    
+    (if sitemap (rwest-io-update-sitemap))
     (org-publish prj-name force)))
+
+;;;###autoload
+(defun rwest-io-update-sitemap ()
+  "update `rwest-io' sitemaps:
+- blog
+- notes
+- projects"
+  (interactive)
+  (let ((dirs '("blog" "notes" "projects")))
+    (message (format "generating sitemaps: %s" dirs))
+    (while dirs
+      (let* ((dir (pop dirs))
+	     (default-directory (concat rwest-io-project-dir "/org/" dir))
+	     (files (directory-files default-directory nil ".org$" t))
+	     (entries))
+	(delete "sitemap.org" files)
+	(while files
+	  (let* ((file (pop files)))
+	    (with-temp-buffer
+	      (insert-file-contents file nil)
+	      (add-to-list
+	       'entries
+	       (cons file (org-collect-keywords '("TITLE" "DATE")))))))
+	(sort entries
+	      (lambda (a b)
+		(string-greaterp (car (cdaddr a)) (car (cdaddr b)))))
+	(with-temp-file "sitemap.org"
+	  (insert (format "#+TITLE: %s\n" dir))
+	  (dolist (e entries)
+	    (let ((file (file-name-with-extension (car e) "html"))
+		  (title (cadadr e))
+		  (date (car (cdaddr e))))
+	      (insert (format "- %s [[%s/%s/%s][%s]]\n" date rwest-io-url dir file title)))))
+	(message (format "generated org/%s/sitemap.org" dir))))))
 
 (provide 'rwest-io)
 ;;; rwest-io.el ends here

@@ -1,5 +1,5 @@
 #+TITLE: Progressive Web Apps
-#+DATE: 2019-09-10 Tue
+#+DATE: 2019-09-10
 #+FILETAGS: :app:web:wasm:js:
 #+SETUPFILE: ../clean.theme
 * PWAs Today

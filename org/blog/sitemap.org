@@ -1,5 +1,4 @@
 #+TITLE: blog
-
-- {{{filedate(~/dev/rwest_io/org/blog/octatrack_set_prep.org)}}} [[file:octatrack_set_prep.org][Octatrack Set Prep]] {{{filetags(~/dev/rwest_io/org/blog/octatrack_set_prep.org)}}}
-- {{{filedate(~/dev/rwest_io/org/blog/rock_and_roll.org)}}} [[file:rock_and_roll.org][Rock & Roll]] {{{filetags(~/dev/rwest_io/org/blog/rock_and_roll.org)}}}
-- {{{filedate(~/dev/rwest_io/org/blog/playing_with_nws.org)}}} [[file:playing_with_nws.org][Playing with NWS]] {{{filetags(~/dev/rwest_io/org/blog/playing_with_nws.org)}}}
+- 2022-07-26 [[https://rwest.io/blog/octatrack_set_prep.html][Octatrack Set Prep]]
+- 2021-04-30 [[https://rwest.io/blog/playing_with_nws.html][Playing with NWS]]
+- 2021-04-28 [[https://rwest.io/blog/rock_and_roll.html][Rock & Roll]]

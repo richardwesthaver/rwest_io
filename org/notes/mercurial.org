@@ -1,5 +1,5 @@
 #+TITLE: Mercurial
-#+DATE: 2020-11-12 Thu
+#+DATE: 2020-11-12
 #+FILETAGS: :vcs:
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
 #+SETUPFILE: ../clean.theme

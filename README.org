@@ -3,11 +3,12 @@
 #+AUTHOR: ellis
 #+EMAIL: ellis@rwest.io
 #+DESCRIPTION: My Website
++ source code: [[https://hg.rwest.io/rwest_io]]
+  - [[https://github.com/richardwesthaver/rwest_io][github mirror]]
 
 This project contains the source code for my personal website,
 [[https://rwest.io][rwest.io]].
 
-* Overview
 My site consists of a few modules hosted by [[https://www.nginx.com/][Nginx]] (=*= denotes
 authentication required):
 
@@ -44,7 +45,7 @@ session.
   |          |  |                |   +----------------+	
   |          |  |    ORG         |   |                |	
   |          |  |                |   |                |  	
-  |          |  +----------------+   |   	   DB       |
+  |          |  +----------------+   |       DB       |
   |          |  |                |   |                |
   |          |  |    AUTH        |   |                |
   |  NGINX   |  |                |   +----------------+
@@ -62,8 +63,8 @@ session.
   |          |
   +----------+
 #+end_src
-** Modules
-- there are two types of modules worth mentioning here: static
+* Modules
+- there are two /types/ of modules worth mentioning here: static
   (org) and dynamic (auth el status).
   - *Static* modules do not interact with the backend and are just
     'compiled' files which can then be served by any web server.
@@ -75,13 +76,30 @@ session.
     - configured at runtime
     - flexible routing - host each service across LAN/WAN
 *** org
+- static org files
+- compiled to html and sent to web server via =rwest-io.el=
 *** auth
 - authsrv
+  - OAuth2 web service
+    - Discord
+    - Google
 *** el
-- elsrv
+- elprox
+  - proxy HTTP requests to elsrv.el UDP socket
 - elsrv.el
+  - Emacs remote control
+    - evaluate elisp via raw UDP REPL
 *** status
 - statsrv
+  - server health report
+  - current weather for client IP
+* tasks
+** TODO sitemap generator
+- State "TODO"       from              [2022-08-27 Sat 21:13]
+- default generator isn't respecting our filedate macro
+  - always uses the UPDATED file property
+- make separate autoload fn for generating sitemap, remove from
+  org-publish-project-alist
 * resources
 - [[https://gitlab.com/OlMon/org-themes/-/tree/master/][org themes]]
 - [[https://www.postgresql.org/docs/current/index.html][postgres docs]]

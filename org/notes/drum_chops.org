@@ -1,5 +1,5 @@
 #+TITLE: Drum Chops
-#+DATE: 2020-11-10 Tue
+#+DATE: 2020-11-10
 #+FILETAGS: :music:drums:lang:
 #+SETUPFILE: ../clean.theme
 - a /shed/ is a drum session. usually involves a couple drum buddies

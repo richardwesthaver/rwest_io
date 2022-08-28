@@ -2,9 +2,11 @@ use std::path::PathBuf;
 
 #[derive(clap::Parser)]
 pub struct Cfg {
-  #[clap(default_value=".", env)]
+  /// path to local org-directory
+  // FIXME: this should be retrieved from elsrv
+  #[clap(default_value="~/org", env)]
   pub org_path: PathBuf,
-  /// host address for elsrv
+  /// host address for Emacs server with an instance of elsrv.el
   #[clap(default_value="127.0.0.1:8080", env)]
   pub elsrv_addr: String,
   /// host address of postgres DB

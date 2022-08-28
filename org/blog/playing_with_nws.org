@@ -1,5 +1,5 @@
 #+TITLE: Playing with NWS
-#+DATE: 2021-04-30 Fri
+#+DATE: 2021-04-30
 #+FILETAGS: :rust:data:
 #+OPTIONS: ^:nil
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">

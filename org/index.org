@@ -3,14 +3,14 @@
 #+DATE: 2022-06-20
 * [[file:blog.org][blog]]
 #+HTML: <div class="blog-index">
-#+INCLUDE: "blog/sitemap.org" :lines "3-"
+#+INCLUDE: "blog/sitemap.org" :lines "2-"
 #+HTML: </div>
 * [[file:notes.org][notes]]
 #+HTML: <div class="notes-entries">
-#+INCLUDE: "notes/sitemap.org" :lines "3-"
+#+INCLUDE: "notes/sitemap.org" :lines "2-"
 #+HTML: </div>
 
 * [[file:projects.org][projects]]
 #+HTML: <div class="projects-entries">
-#+INCLUDE: "projects/sitemap.org" :lines "3-"
+#+INCLUDE: "projects/sitemap.org" :lines "2-"
 #+HTML: </div>

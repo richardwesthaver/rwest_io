@@ -1,5 +1,5 @@
 #+TITLE: Rock & Roll
-#+DATE: 2021-04-28 Wed
+#+DATE: 2021-04-28
 #+FILETAGS: :c++:rocksdb:rust:
 #+OPTIONS: ^:nil
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
