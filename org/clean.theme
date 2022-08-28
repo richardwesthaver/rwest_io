@@ -133,18 +133,18 @@
 #+HTML_HEAD: a {
 #+HTML_HEAD:     font-weight:  inherit;
 #+HTML_HEAD:     line-height:  inherit;
-#+HTML_HEAD:     color:  #000;
+#+HTML_HEAD:     color:  #2B1846;
 #+HTML_HEAD:     text-decoration:  none;
 #+HTML_HEAD: }
 #+HTML_HEAD: sup a:before {
 #+HTML_HEAD:     content:  "[";
 #+HTML_HEAD: }
-#+HTML_HEAD: sup a: after {
+#+HTML_HEAD: sup a:after {
 #+HTML_HEAD:     content:  "]";
 #+HTML_HEAD: }
-#+HTML_HEAD: a: hover {
+#+HTML_HEAD: a:hover {
 #+HTML_HEAD:     text-decoration:  underline;
-#+HTML_HEAD:     color: #765779;
+#+HTML_HEAD:     color: #EF00F0;
 #+HTML_HEAD: }
 #+HTML_HEAD: table {
 #+HTML_HEAD:     line-height:  2.5;
@@ -374,6 +374,10 @@
 #+HTML_HEAD:     }
 #+HTML_HEAD: }
 
+# custom
+#+HTML_HEAD: .org-center {
+#+HTML_HEAD:   text-align: center;
+#+HTML_HEAD: }
 
 #+HTML_HEAD:  </style>
 
