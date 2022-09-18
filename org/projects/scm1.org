@@ -1,0 +1,65 @@
+#+TITLE: scm1
+#+DATE: 2022-09-03
+#+FILETAGS: :prog:lang:lisp:rust:
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../style/css/htmlize.css">
+#+SETUPFILE: ../clean.theme
+#+INCLUDE: "../../../scm1/README" src text
+
+scm1 is a toy interpreter based on a subset of scheme I wrote one
+weekend. It is built for educational purposes and is my first
+experience in implementing a lisp.
+
+The code is extremely terse and so it follows that the syntax of
+=scm1= is as well. The inspiration comes from Arthur Whitney and some
+of his ideas on PL design, most notably his Array-based lang
+=k=. Instead of =def!= or =define= we have the =:= function, instead
+of an =if= conditional we have =?=, and the lambda function is =f=.
+
+#+begin_src scheme
+  λ ; define a function 'x' which takes an argument and adds 2 if it's less than 10, else print 'nope'
+  λ (: x (f (a) (? (< a 10) (+ a 2) (m "nope")))))
+  x
+  λ (x -1)
+  1
+  λ (x 9)
+  11
+  λ (x 10)
+  nope
+...
+  λ ; factorial  
+  λ (: fak (f (n) (? (< n 2) 1 (* n (fak (- n 1))))))
+  λ (fak 10)
+  3628800  
+#+end_src
+
+Overall, I'm happy with the choices I've made in this small language -
+I got the chance to see how it feels to write terse Rust, learned
+about lisp implementations, and got a nice little demo program out of
+it.
+
+In retrospective, there are a few things worth commenting on:
+- terse Rust doesn't feel as good as terse C \\
+  It was fun to experiment with short and concise code in Rust, but
+  the language isn't quite suited for it. If I was a wizard with
+  procedural macros this may not be the case, but even then you need a
+  separate crate. The builtin =macro_rules!= facilities simply don't
+  feel as expressive as the C preprocessor IMO.
+- terse Lisp doesn't make much sense \\
+  For a toy language, anything goes. In a production setting though,
+  The single char primitives strategy is infeasible for a Lisp.
+  - First of all, whitespace is a syntactic necessity -- it lets us
+    differentiate between the signed integer =-1= and the negate
+    function followed by a 1, as in =(- 1)=. We can't ignore them for
+    the sake of brevity, as is customary in Array-based langs
+    (APL,BQN,J,K). This inflates the char count of the programs we
+    write, and decreases the visual effectiveness of of writing terse
+    in the first place.
+  - Also unlike array langs, our primitives don't rely on heavy
+    operator-overloading, making it difficult to define all primitives
+    we need in a limited (ASCII) character set. In k for example, for
+    any operator we have 2*(1+x) possible overloads where x is the
+    count of adverbs -- a variant for each adverb (+ without) for
+    monadic and dyadic expressions respectively.
+  - Due to the composability of Lisp, it is much more effective to use
+    longer names for primitives and define higher-order types which
+    can be as terse as necessary.

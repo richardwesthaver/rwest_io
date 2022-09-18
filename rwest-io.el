@@ -135,6 +135,12 @@ entry style and project"
 	 :recursive t
 	 :publishing-directory ,rwest-io-publish-dir
 	 :publishing-function org-publish-attachment)
+	("x"
+	 :base-directory "x"
+	 :base-extension "css\\|js\\|wasm\\|html"
+	 :recursive t
+	 :publishing-directory ,rwest-io-publish-dir
+	 :publishing-function org-publish-attachment)
 	;; be aware, the ordering of components matters..
 	("rwest.io" :components ("blog" "notes" "projects" "content" "static"))
 	("rwest.io-with-static" :components ( "blog" "notes" "projects" "content" "static" "media"))))
@@ -162,17 +168,16 @@ entry style and project"
         (org-id-add-location id (buffer-file-name (buffer-base-buffer)))
         id)))))
 
+;;; postamble
+(setq org-html-postamble "<footer><div><p>created %d;<br>updated %C;</p></div></footer>")
+
+;;; commands
+;;;###autoload
 (defun org-id-add-to-headlines-in-file ()
   "Add CUSTOM_ID properties to all headlines in the
    current file which do not already have one."
   (interactive)
   (org-map-entries (lambda () (org-custom-id-get (point) 'create))))
-
-;;; postamble
-
-(setq org-html-postamble "<footer><div><p>created %d;<br>updated %C;</p></div></footer>")
-
-;;; commands
 
 ;;;###autoload
 (defun rwest-io-publish (&optional sitemap static force)
@@ -192,6 +197,19 @@ If given a prefix (C-u), set all args to t"
     (message (format "publishing from %s" default-directory))    
     (if sitemap (rwest-io-update-sitemap))
     (org-publish prj-name force)))
+
+;;;###autoload
+(defun rwest-io-gen-project (proj)
+  "generate an org-mode file based on the readme file located in PROJ."
+  (interactive)
+  (let* ((default-directory (concat rwest-io-project-dir "/org/projects/"))
+	 (proj (file-name-directory proj))
+	 (readme (concat proj "README"))
+	 (dst (concat default-directory
+		      (file-name-nondirectory (directory-file-name proj))
+		      ".org")))
+    (message (format "generating %s based on %s" dst readme))
+    (copy-file readme dst t t t t)))
 
 ;;;###autoload
 (defun rwest-io-update-sitemap ()
